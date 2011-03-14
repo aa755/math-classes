@@ -1,0 +1,26 @@
+Name: MathClasses
+Title: Math Classes
+Description: We have been working on a new set of foundational interfaces for formalized constructive mathematics in Coq, heavily based on Coq's new type classes, used in a systematic way in order to achieve:
+* elegant and mathematically sound abstract interfaces for algebraic and numeric structures up to and including rationals (with practical use of universal algebra and category theory);
+* a very flexible purely predicate-based representation of algebraic structures that makes sharing, multiple inheritance, and derived inheritance, all trivial;
+* clean expression terms that neither refer to proofs nor require deeply nested record projections;
+* fluent rewriting;
+* easy and flexible replacement and specialization of data representations and operations with more efficient versions;
+* ordinary mathematical notation and overloaded names not reliant on Coq's notation scopes.
+Keywords: type classes
+algebraic and numeric structures
+universal algebra
+category theory
+Category: Mathematics/Algebra
+Author: Eelis van der Weegen
+Email: eelis@eelis.net
+Institution: Radboud University
+Author: Robbert Krebbers
+Email: mail@robbertkrebbers.nl
+Institution: Radboud University
+Author: Bas Spitters
+Email: spitters@cs.ru.nl
+Homepage: http://www.cs.ru.nl/~spitters/
+Institution: Radboud University
+Require: 
+License: BSD
