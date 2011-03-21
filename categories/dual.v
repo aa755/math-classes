@@ -15,7 +15,7 @@ Section contents.
   Global Instance: ∀ (x y: Object), Equivalence (e x y).
   Proof. intros. change (Equivalence ((=): Equiv (A y x))). apply _. Qed.
 
-  Global Instance: ∀ (x y: Object), Setoid (x ⟶ y).
+  Global Instance: ∀ (x y: Object), Setoid (x ⟶ y) := {}.
 
   Instance: ∀ (x y z: Object), Proper ((=) ==> (=) ==> (=)) (@comp Object flipA _ x y z).
   Proof.

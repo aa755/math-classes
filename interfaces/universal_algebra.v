@@ -128,7 +128,7 @@ Section for_signature.
      @pointwise_dependent_relation (sorts σ) (λ a, V → A a)
       (λ _, pointwise_relation _ (=)).
 
-    Global Instance: Equivalence ((=): relation Vars).
+    Global Instance: Equivalence ((=): relation Vars) := {}.
 
   End Vars.
 

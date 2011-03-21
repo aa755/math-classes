@@ -60,9 +60,9 @@ Section contents.
      induction x; simpl; intuition.
     Qed.
 
-    Instance: Equivalence Me.
+    Instance: Equivalence Me := {}.
 
-    Global Instance: Setoid (M A).
+    Global Instance: Setoid (M A) := {}.
 
   End equality.
 
