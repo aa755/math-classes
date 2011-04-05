@@ -1,7 +1,7 @@
 Require
  Equivalence.
 Require Import
- Morphisms Setoid Program.
+ Morphisms Coq.Setoids.Setoid Program.
 Require Export
  canonical_names util setoid_tactics.
 
@@ -37,8 +37,9 @@ Section upper_classes.
   Context {plus: RingPlus A} {mult: RingMult A} {zero: RingZero A} {one: RingOne A}.
 
   Class SemiRing: Prop :=
-    { semiring_mult_monoid:> CommutativeMonoid (op:=mult) (unit:=one)
-    ; semiring_plus_monoid:> CommutativeMonoid (op:=plus) (unit:=zero)
+    { semiring_mult_monoid:> CommutativeMonoid 
+      (op:=ringmult_is_semigroupop) (unit:=ringone_is_monoidunit)
+    ; semiring_plus_monoid:> CommutativeMonoid (op:=ringplus_is_semigroupop) (unit:=ringzero_is_monoidunit)
     ; semiring_distr:> Distribute (.*.) (+)
     ; semiring_left_absorb:> LeftAbsorb (.*.) 0 }.
 

@@ -1,7 +1,7 @@
 Require
   theory.naturals. 
 Require Import
-  Morphisms Ring Program
+  Morphisms setoid_ring.Ring Program
   abstract_algebra interfaces.naturals
   orders.semirings theory.rings.
 

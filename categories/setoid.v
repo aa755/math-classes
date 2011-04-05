@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Setoid Program
+  Relation_Definitions Morphisms Coq.Setoids.Setoid Program
   abstract_algebra theory.categories.
 
 Inductive Object := object { T:> Type; e: Equiv T; setoid_proof: @Setoid T e }.

@@ -4,7 +4,7 @@ Require Import abstract_algebra.
 Require
  Equivalence.
 Require Import
- Morphisms Setoid Program.
+ Morphisms Coq.Setoids.Setoid Program.
 Require Import canonical_names.
 
 Section contents.

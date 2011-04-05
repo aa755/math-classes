@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Ring Program Setoid
+  Relation_Definitions Morphisms setoid_ring.Ring Program Coq.Setoids.Setoid
   abstract_algebra theory.rings
   implementations.semiring_pairs.
 Require Export

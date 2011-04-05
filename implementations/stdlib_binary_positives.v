@@ -4,7 +4,7 @@
 Require
   interfaces.naturals.
 Require Import
-  BinInt Morphisms Ring Arith
+  BinInt Morphisms setoid_ring.Ring Arith
   abstract_algebra theory.rings peano_naturals.
 
 Lemma xO_in_ring_terms p: xO p ≡ (p + p)%positive.

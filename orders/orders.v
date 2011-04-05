@@ -1,4 +1,4 @@
-Require Import Morphisms Setoid Program abstract_algebra.
+Require Import Morphisms Coq.Setoids.Setoid Program abstract_algebra.
 
 Section contents.
 Context `{Setoid A} `{Order A}.

@@ -1,5 +1,5 @@
 Require Import
-  Morphisms Setoid abstract_algebra Program
+  Morphisms Coq.Setoids.Setoid abstract_algebra Program
   universal_algebra ua_homomorphisms 
   theory.categories categories.variety.
 Require setoids.

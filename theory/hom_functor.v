@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Setoid Program
+  Relation_Definitions Morphisms Coq.Setoids.Setoid Program
   abstract_algebra setoids interfaces.functors categories.
 Require categories.setoid.
 

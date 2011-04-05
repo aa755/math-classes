@@ -1,7 +1,7 @@
 Require
   varieties.monoid theory.groups.
 Require Import
-  Ring Program Morphisms abstract_algebra.
+  setoid_ring.Ring Program Morphisms abstract_algebra.
 
 Definition ne_0 `(x : R) `{Equiv R} `{RingZero R} `{p : PropHolds (x ≠ 0)} : x ≠ 0 := p.
 Definition ge_0 `(x : R) `{Equiv R} `{Order R} `{RingZero R} `{p : PropHolds (0 ≤ x)} : 0 ≤ x := p.
@@ -19,6 +19,8 @@ Proof.
    apply associativity.
   apply distribute_r.
 Qed.
+
+Typeclasses Transparent RingZero RingOne RingPlus RingMult MonoidUnit SemiGroupOp.
 
 (* It's not possible to apply [left_cancellation (.*.) z] directly in case no [PropHolds (0 ≠ z)]
    instance is present. *)
@@ -264,7 +266,7 @@ Section morphism_composition.
     `{!RingMult C} `{!RingPlus C} `{!RingOne C} `{!RingZero C} `{!Equiv C}
     (f: A → B) (g: B → C).
 
-  Global Instance id_semiring_morphism `{!SemiRing A}: SemiRing_Morphism id.
+  Global Instance id_semiring_morphism `{!SemiRing A}: SemiRing_Morphism id := {}.
 
   Global Instance compose_semiring_morphisms `{!SemiRing_Morphism f} `{!SemiRing_Morphism g} : 
     SemiRing_Morphism (g ∘ f).

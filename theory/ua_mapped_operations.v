@@ -1,5 +1,5 @@
 Require Import
-  Setoid Morphisms
+  Coq.Setoids.Setoid Morphisms
   abstract_algebra universal_algebra.
 
 Section contents.

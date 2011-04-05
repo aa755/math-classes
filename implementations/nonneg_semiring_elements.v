@@ -1,7 +1,7 @@
 Require 
   theory.rings.
 Require Import
-  Morphisms Ring Program Setoid
+  Morphisms setoid_ring.Ring Program Setoid
   abstract_algebra orders.semirings.
 
 Section nonneg_semiring_elements.

@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Setoid Program
+  Relation_Definitions Morphisms Coq.Setoids.Setoid Program
   abstract_algebra interfaces.functors theory.categories.
 
 Record Object := object
@@ -11,6 +11,7 @@ Record Object := object
   ; Category_inst: Category obj }.
 
 Implicit Arguments object [[Arrows_inst] [Equiv_inst] [CatId_inst] [CatComp_inst] [Category_inst]].
+
 Existing Instance Arrows_inst.
 Existing Instance Equiv_inst.
 Existing Instance CatId_inst.
@@ -33,7 +34,8 @@ Implicit Arguments arrow [[x] [y]].
 Existing Instance Fmap_inst.
 Existing Instance Functor_inst.
 
-Hint Extern 4 (Arrows Object) => exact Arrow: typeclass_instances.
+Instance: Arrows Object := Arrow.
+(* Hint Extern 4 (Arrows Object) => exact Arrow: typeclass_instances. *)
   (* Matthieu is adding [Existing Instance (c: T).], which is nicer. *)
 
 Section contents.
@@ -150,7 +152,7 @@ Section contents.
      fmap x0 a2 ◎ snd (` (x2 (y1 q))) ◎ fmap y0 (fmap y1 r)).
    pose proof (H (y1 p) (y1 q) (fmap y1 r)). clear H.
    destruct (x2 (y1 p)) as [[a3 a4] [e4 e5]], (x2 (y1 q)) as [[a5 a6] [e6 e7]]. clear x2.
-   simpl in *.
+   simpl in *.   
    rewrite <- associativity, <- H0. clear H0.
    apply transitivity with ((fmap x0 (fmap x1 r) ◎ fmap x0 a0) ◎ a4).
     repeat rewrite associativity. reflexivity.

@@ -4,7 +4,7 @@ Require Export
 Require
  theory.naturals theory.nat_distance.
 Require Import
- RelationClasses Morphisms Ring Program Setoid
+ RelationClasses Morphisms setoid_ring.Ring Program Setoid
  interfaces.naturals abstract_algebra natpair_integers.
 
 (* Any two integer implementations are trivially isomorphic because of their initiality,

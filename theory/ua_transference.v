@@ -1,5 +1,5 @@
 Require Import
-  Morphisms Setoid Program
+  Morphisms Coq.Setoids.Setoid Program
   abstract_algebra universal_algebra ua_homomorphisms
   canonical_names theory.categories ua_mapped_operations.
 

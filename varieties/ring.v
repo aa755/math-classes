@@ -2,7 +2,7 @@
 Require
   categories.variety theory.rings.
 Require Import
-  Program Morphisms Ring
+  Program Morphisms setoid_ring.Ring
   abstract_algebra universal_algebra ua_homomorphisms workaround_tactics.
 
 Inductive op := plus | mult | zero | one | opp.

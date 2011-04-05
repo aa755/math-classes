@@ -1,5 +1,5 @@
 Require Import
-  Morphisms Setoid Program
+  Morphisms Coq.Setoids.Setoid Program
   abstract_algebra
   universal_algebra.
 
@@ -133,6 +133,8 @@ End homo.
    apply (IHo0 _ (o2 (g _ x)))...
   Qed.
 
+  Typeclasses Transparent Equiv. (* Need to instantiate a [relation] existential with [H0 t : Equiv] *)
+
   Lemma invert_homomorphism A B f
     `{∀ a, Equiv (A a)} `{∀ a, Equiv (B a)}
     {ao: AlgebraOps σ A} {bo: AlgebraOps σ B}
@@ -156,9 +158,9 @@ End homo.
     symmetry...
    intros P Q R S T x.
    apply IHo0.
-     specialize (R (inv t x)).
      pose proof (surjective (f t) x x) as E.
-     rewrite E in R.
+     specialize (R (f t ⁻¹ x)).
+     rewrite E in R. 
       assumption.
      reflexivity.
     apply S. reflexivity.

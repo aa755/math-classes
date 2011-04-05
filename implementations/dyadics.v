@@ -4,7 +4,7 @@
    embedded into any [Rationals] implementation [Q]. 
 *)
 Require Import
-  Morphisms Ring Program RelationClasses Setoid
+  Morphisms setoid_ring.Ring Program RelationClasses Setoid
   abstract_algebra 
   interfaces.integers interfaces.naturals interfaces.rationals
   interfaces.additional_operations

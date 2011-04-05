@@ -2,12 +2,14 @@ Global Generalizable All Variables.
 Global Set Automatic Introduction.
 
 Require Import
- RelationClasses Relation_Definitions Morphisms Setoid Program.
+ RelationClasses Relation_Definitions Morphisms Coq.Setoids.Setoid Program.
 Require Export Unicode.Utf8 Utf8_core.
 Require Export workarounds.
 
 (* Equality *)
 Class Equiv A := equiv: relation A.
+
+Typeclasses Transparent Equiv.
 
 (* We use this virtually everywhere, and so use "=" for it: *)
 Infix "=" := equiv: type_scope.

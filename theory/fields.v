@@ -1,7 +1,7 @@
 Require
-  Field_theory Setoid.
+  Field_theory Coq.Setoids.Setoid.
 Require Import
-  Morphisms Ring Program Field
+  Morphisms setoid_ring.Ring Program Field
   abstract_algebra theory.rings.
 
 Section field_properties. 
@@ -29,7 +29,7 @@ Section field_properties.
    rewrite associativity, E. ring.
   Qed.
 
-  Global Instance: IntegralDomain F.
+  Global Instance: IntegralDomain F := {}.
 
   Lemma field_div_0_l x y : x = 0 → x // y = 0.
   Proof. intros E. rewrite E. apply left_absorb. Qed.

@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Ring
+  Relation_Definitions Morphisms setoid_ring.Ring
   abstract_algebra interfaces.naturals theory.categories 
   categories.variety.
 Require

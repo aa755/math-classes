@@ -1,4 +1,4 @@
-Require Ring.
+Require setoid_ring.Ring.
 Require Field.
 
 (*

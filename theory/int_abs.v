@@ -1,7 +1,7 @@
 Require
   theory.nat_distance.
 Require Import
-  Morphisms Setoid Program
+  Morphisms Coq.Setoids.Setoid Program
   interfaces.naturals abstract_algebra natpair_integers
   theory.integers theory.rings orders.naturals orders.semirings.
 

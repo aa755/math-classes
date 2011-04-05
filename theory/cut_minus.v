@@ -1,7 +1,7 @@
 Require
   orders.semirings.
 Require Import 
-  Program Morphisms Setoid Ring
+  Program Morphisms Coq.Setoids.Setoid Ring
   abstract_algebra interfaces.additional_operations
   orders.minmax.
 

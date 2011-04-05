@@ -1,7 +1,7 @@
 Require
   orders.naturals peano_naturals.
 Require Import
-  Morphisms Ring
+  Morphisms setoid_ring.Ring
   abstract_algebra interfaces.naturals interfaces.additional_operations.
 
 Section contents.

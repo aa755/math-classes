@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions Morphisms Setoid Program Basics
+  Relation_Definitions Morphisms Coq.Setoids.Setoid Program Basics
   abstract_algebra canonical_names workaround_tactics.
 Require setoids.
 

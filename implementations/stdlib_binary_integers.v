@@ -2,7 +2,7 @@
 Require 
   interfaces.naturals theory.naturals peano_naturals theory.shiftl.
 Require Import
-  BinInt Morphisms Ring Program Arith ZBinary
+  BinInt Morphisms setoid_ring.Ring Program Arith ZBinary
   abstract_algebra interfaces.integers
   theory.categories theory.rings 
   stdlib_binary_positives stdlib_binary_naturals

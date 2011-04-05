@@ -1,7 +1,7 @@
 Require
   ne_list.
 Require Import
-  Morphisms Setoid Program List abstract_algebra.
+  Morphisms Coq.Setoids.Setoid Program List abstract_algebra.
 
 Local Notation ne_list := ne_list.L.
 

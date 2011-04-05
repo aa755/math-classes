@@ -1,5 +1,5 @@
 Require theory.fields.
-Require Import Morphisms Ring abstract_algebra theory.rings.
+Require Import Morphisms setoid_ring.Ring abstract_algebra theory.rings.
 
 Inductive Frac R `{e : Equiv R} `{zero : RingZero R} : Type := frac { num: R; den: R; den_nonzero: den ≠ 0 }.
   (* We used to have [den] and [den_nonzero] bundled, which did work relatively nicely with Program, but the

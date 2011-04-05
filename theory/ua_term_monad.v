@@ -1,5 +1,5 @@
 Require Import
-  Morphisms Setoid
+  Morphisms Coq.Setoids.Setoid
   abstract_algebra universal_algebra interfaces.monads canonical_names.
 
 Section contents.

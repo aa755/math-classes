@@ -1,6 +1,6 @@
 (* To be imported qualified. *)
 Require Import
-  Morphisms Setoid abstract_algebra Program.
+  Morphisms Coq.Setoids.Setoid abstract_algebra Program.
 
 Instance ext_equiv_trans `{Setoid A} `{Setoid B}: Transitive (_ : Equiv (A → B)).
 Proof. intros ? y ???? w ?. transitivity (y w); firstorder. Qed.
@@ -19,8 +19,8 @@ Section simple_product.
 
   Global Instance prod_equiv: Equiv (A * B) := λ p q, fst p = fst q ∧ snd p = snd q.
 
-  Global Instance: Setoid (A * B).
-  Proof. firstorder. Qed.
+  Global Instance: Setoid (A * B) := {}.
+  Proof. firstorder auto. Qed.
 
   Global Instance pair_proper : Proper ((=) ==> (=) ==> (=)) (@pair A B).
   Proof. firstorder. Qed.

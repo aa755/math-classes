@@ -7,7 +7,7 @@
 Require
  theory.naturals orders.naturals.
 Require Import
- Morphisms Ring Program
+ Morphisms setoid_ring.Ring Program
  abstract_algebra theory.categories
  interfaces.naturals interfaces.integers.
 Require Export

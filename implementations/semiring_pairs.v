@@ -1,10 +1,10 @@
 Require
   theory.rings.
 Require Import
-  Morphisms Ring Setoid Program
+  Morphisms setoid_ring.Ring Coq.Setoids.Setoid Program
   abstract_algebra.
 
-Inductive SRpair (SR : Type) : Type := C { pos : SR ; neg : SR }.
+Inductive SRpair (SR : Type) := C { pos : SR ; neg : SR }.
 Implicit Arguments C [[SR]].
 Implicit Arguments pos [[SR]].
 Implicit Arguments neg [[SR]].
@@ -145,7 +145,7 @@ Proof.
   now rewrite 2!rings.plus_0_r in E.
 Qed.
 
-Global Instance: OrderEmbedding SRpair_inject.
+Global Instance: OrderEmbedding SRpair_inject := {}.
 
 Instance: Reflexive SRpair_order.
 Proof. intros [? ?]. unfold SRpair_order. reflexivity. Qed.

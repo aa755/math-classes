@@ -1,5 +1,5 @@
 Require Import
-  Program Morphisms Setoid canonical_names.
+  Program Morphisms Coq.Setoids.Setoid canonical_names.
 
 Section pointwise_dependent_relation. 
   Context A (B: A → Type) (R: ∀ a, relation (B a)).

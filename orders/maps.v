@@ -1,5 +1,5 @@
 Require Import 
-  Program Morphisms Setoid 
+  Program Morphisms Coq.Setoids.Setoid 
   abstract_algebra orders.orders theory.setoids.
 
 Instance order_iso_injective `{OrderIsomorphism A B f} `{!PartialOrder (precedes (A:=A))} `{!PartialOrder (precedes (A:=B))} : 
@@ -96,7 +96,7 @@ Section order_embedding.
       intros x. now apply (order_preserving_back f).
      intros x y z E1 E2. apply (order_preserving_back f).
      transitivity (f y); now apply (order_preserving f).
-    intros x y E1 E2. apply (injective f).
+    intros x y E1 E2. apply (injective f). Typeclasses Transparent Order.
     apply (antisymmetry _); now apply (order_preserving f).
   Qed.
 
@@ -107,7 +107,7 @@ Section order_embedding.
   Qed.
 End order_embedding.
 
-Instance id_order_morphism `{Setoid A} `{Order A} `{!Proper ((=) ==> (=) ==> iff) (≤)} : Order_Morphism (@id A).
+Instance id_order_morphism `{Setoid A} `{Order A} `{!Proper ((=) ==> (=) ==> iff) (≤)} : Order_Morphism (@id A) := {}.
 
 Instance id_order_preserving `{Setoid A} `{Order A} `{!Proper ((=) ==> (=) ==> iff) (≤)} : OrderPreserving (@id A).
 Proof. split; try apply _. easy. Qed.
@@ -143,7 +143,7 @@ Section composition.
   Qed.
 
   Global Instance compose_order_embedding_back `{!OrderEmbedding (f : A → B)} `{!OrderEmbedding (g : B → C)} : 
-    OrderEmbedding (g ∘ f).
+    OrderEmbedding (g ∘ f) := {}.
 End composition.
 
 Section propers.

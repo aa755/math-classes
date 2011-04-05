@@ -1,7 +1,7 @@
 Require 
   ua_homomorphisms orders.orders theory.rings.
 Require Import
-  Morphisms Ring Arith_base
+  Morphisms setoid_ring.Ring Arith_base
   abstract_algebra interfaces.naturals theory.categories
   interfaces.additional_operations.
 
@@ -91,7 +91,7 @@ Proof.
 Qed.
 
 (* [nat] is indeed a model of the naturals *)
-Instance: Naturals nat.
+Instance: Naturals nat := {}.
 
 (* Order *)
 Instance nat_le: Order nat := le.

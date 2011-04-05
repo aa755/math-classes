@@ -1,5 +1,5 @@
 Require Import 
-  Program Morphisms Ring Factorial workaround_tactics
+  Program Morphisms setoid_ring.Ring Factorial workaround_tactics
   abstract_algebra interfaces.additional_operations interfaces.naturals interfaces.integers
   theory.nat_pow theory.int_pow theory.streams.
 

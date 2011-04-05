@@ -37,7 +37,7 @@ Section from_variety.
 
   Context `{InVariety theory A}.
 
-  Instance: Setoid (A tt).
+  Instance: Setoid (A tt) := {}.
 
 End from_variety.
 

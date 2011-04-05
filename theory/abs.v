@@ -1,5 +1,5 @@
 Require Import
-  Morphisms Ring
+  Morphisms setoid_ring.Ring
   abstract_algebra orders.semirings.
 
 Section contents.

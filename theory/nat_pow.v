@@ -1,7 +1,7 @@
 Require
   theory.naturals orders.semirings orders.naturals.
 Require Import 
-  Program Morphisms Setoid Ring
+  Program Morphisms Coq.Setoids.Setoid Ring
   abstract_algebra interfaces.naturals interfaces.additional_operations.
 
 (* * Properties of Nat Pow *)

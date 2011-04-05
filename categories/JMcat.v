@@ -1,7 +1,7 @@
 Require
   JMrelation.
 Require Import
-  Relation_Definitions Morphisms Setoid Program
+  Relation_Definitions Morphisms Coq.Setoids.Setoid Program
   abstract_algebra interfaces.functors theory.categories.
 
 Record Object := object
