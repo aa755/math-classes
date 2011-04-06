@@ -4,7 +4,7 @@ Require Export
 Require
  theory.naturals theory.nat_distance.
 Require Import
- RelationClasses Morphisms setoid_ring.Ring Program Setoid
+ RelationClasses Morphisms setoid_ring.Ring Program Coq.Setoids.Setoid
  interfaces.naturals abstract_algebra natpair_integers.
 
 (* Any two integer implementations are trivially isomorphic because of their initiality,
@@ -78,7 +78,7 @@ Section retract_is_int.
   Section for_another_ring.
     Context `{Ring R}.
 
-    Instance: SemiRing_Morphism (integers_to_ring Int R ∘ f⁻¹).
+    Instance: SemiRing_Morphism (integers_to_ring Int R ∘ f⁻¹) := {}.
     Context (h :  Int2 → R) `{!SemiRing_Morphism h}. 
       
     Lemma same_morphism: integers_to_ring Int R ∘ f⁻¹ = h.
@@ -128,6 +128,6 @@ Proof.
   right. apply (injective (integers_to_ring Int (SRpair nat))). now rewrite rings.preserves_0.
 Qed.
 
-Global Instance: IntegralDomain Int.
+Global Instance: IntegralDomain Int := {}.
 
 End contents.

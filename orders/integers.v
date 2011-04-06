@@ -1,7 +1,7 @@
 Require
   theory.integers theory.int_abs.
 Require Import
-  Morphisms setoid_ring.Ring Program Setoid workaround_tactics
+  Morphisms setoid_ring.Ring Program Coq.Setoids.Setoid workaround_tactics
   abstract_algebra interfaces.integers interfaces.naturals interfaces.additional_operations
   natpair_integers orders.semirings orders.naturals theory.rings.
 
