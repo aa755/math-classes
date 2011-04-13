@@ -1,5 +1,5 @@
 Require Import
-  Morphisms RelationClasses Equivalence Setoid
+  Morphisms RelationClasses Equivalence Coq.Setoids.Setoid
   abstract_algebra interfaces.functors categories.
 
 Section natural_transformations_id_comp.

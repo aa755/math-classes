@@ -1,5 +1,5 @@
 Require Import
-  Morphisms RelationClasses Equivalence Setoid
+  Morphisms RelationClasses Equivalence Coq.Setoids.Setoid
   categories abstract_algebra functors.
 
 Instance: Arrows unit := λ _ _, unit.

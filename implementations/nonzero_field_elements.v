@@ -1,5 +1,5 @@
 Require Import 
-  Setoid Program Morphisms setoid_ring.Ring
+  Coq.Setoids.Setoid Program Morphisms setoid_ring.Ring
   abstract_algebra 
   theory.fields.
 

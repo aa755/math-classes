@@ -99,7 +99,8 @@ Section contents.
   End more_arrows.
 
   Let obj_iso (x: Object): Equiv x := @iso x _ _ _ _.
-
+  
+  Typeclasses Transparent Arrows.
   Global Instance: ∀ (x y: Object) (a: x ⟶ y), Setoid_Morphism (map_obj a).
   Proof with try apply _.
    constructor...
