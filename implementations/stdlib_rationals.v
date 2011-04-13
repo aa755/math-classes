@@ -1,7 +1,7 @@
 Require
-  stdlib_binary_integers Field QArith.Qfield theory.fields.
+  stdlib_binary_integers setoid_ring.Field QArith.Qfield theory.fields.
 Require Import
-  Ring Morphisms QArith_base Qabs Qpower
+  setoid_ring.Ring Morphisms QArith_base Qabs Qpower
   abstract_algebra interfaces.rationals field_of_fractions
   theory.rings  theory.rationals additional_operations.
 
@@ -15,7 +15,7 @@ Instance Q_mult : RingMult Q := Qmult.
 Program Instance Q_mult_inv : MultInv Q := Qinv.
 
 (* properties: *)
-Instance: Setoid Q.
+Instance: Setoid Q := {}.
 
 Instance: Field Q.
 Proof fields.from_stdlib_field_theory Qfield.Qsft.

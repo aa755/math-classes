@@ -1,6 +1,6 @@
 (* In the standard library equality on streams is defined as pointwise Leibniz equality. 
     Here we prove similar results, but we use setoid equality instead. *)
-Require Export Streams.
+Require Export Lists.Streams.
 Require Import Morphisms peano_naturals abstract_algebra.
 
 Section streams.

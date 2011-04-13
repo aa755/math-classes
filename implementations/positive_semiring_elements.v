@@ -1,5 +1,5 @@
 Require Import
-  Morphisms setoid_ring.Ring Program Setoid
+  Morphisms setoid_ring.Ring Program Coq.Setoids.Setoid
   abstract_algebra orders.semirings.
 
 Section positive_semiring_elements.

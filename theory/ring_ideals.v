@@ -2,7 +2,7 @@
  define what a kernel is, and show that kernels are ideal. *)
 
 Require Import
-  Ring Morphisms Program
+  setoid_ring.Ring Morphisms Program
   ua_congruence abstract_algebra theory.rings.
 Require varieties.ring.
 

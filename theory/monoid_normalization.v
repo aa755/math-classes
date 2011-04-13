@@ -1,4 +1,4 @@
-Require Import Setoid Morphisms Program Omega.
+Require Import Coq.Setoids.Setoid Morphisms Program Omega.
 Require Import abstract_algebra ua_packed.
 Require universal_algebra varieties.monoid.
 

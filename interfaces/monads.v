@@ -1,6 +1,6 @@
 
 Require Import
-  Setoid Morphisms
+  Coq.Setoids.Setoid Morphisms
   abstract_algebra canonical_names.
 
 Section ops.

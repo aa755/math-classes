@@ -1,7 +1,7 @@
 Require
   orders.integers theory.fields.
 Require Import 
-  Program Morphisms Coq.Setoids.Setoid Ring
+  Program Morphisms Coq.Setoids.Setoid setoid_ring.Ring
   abstract_algebra interfaces.naturals interfaces.integers interfaces.additional_operations
   theory.nat_pow theory.int_pow.
 

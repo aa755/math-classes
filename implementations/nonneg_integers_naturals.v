@@ -1,7 +1,7 @@
 Require 
   peano_naturals orders.integers theory.integers.
 Require Import
-  Morphisms setoid_ring.Ring Program RelationClasses Setoid
+  Morphisms setoid_ring.Ring Program RelationClasses Setoids.Setoid
   abstract_algebra interfaces.integers interfaces.naturals interfaces.additional_operations int_abs.
 Require Export
   implementations.nonneg_semiring_elements.

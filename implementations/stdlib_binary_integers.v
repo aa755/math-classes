@@ -142,7 +142,8 @@ Instance: Initial (ring.object Z).
 Proof.
   apply integer_initial. intros. apply same_morphism. auto.
 Qed.
-Instance: Integers Z.
+
+Instance: Integers Z := {}.
 
 Instance: Order Z := Zle.
 

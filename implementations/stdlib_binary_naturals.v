@@ -83,7 +83,7 @@ Proof. constructor. intros x y E. rewrite <- E. now apply nat_of_N_of_nat. now a
 Instance: Injective nat_of_N.
 Proof. constructor. exact nat_of_N_inj. apply _. Qed.
 
-Instance: Bijective nat_of_N.
+Instance: Bijective nat_of_N := {}.
 
 Instance: Inverse N_of_nat := nat_of_N.
 
