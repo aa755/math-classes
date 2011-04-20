@@ -123,6 +123,7 @@ Section composition.
   Proof.
     pose proof (order_morphism_mor f).
     pose proof (order_morphism_mor g).
+    Local Remove Hints sig_equiv sigT_equiv prod_equiv : typeclass_instances.
     split; apply _.
   Qed.
 
