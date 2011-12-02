@@ -1,9 +1,12 @@
 Require Import
-  Program RelationClasses Relation_Definitions List Morphisms
+  Morphisms RelationClasses Relation_Definitions List
   universal_algebra ua_homomorphisms canonical_names ua_subalgebraT util.
 Require ua_products.
 
-Require categories.
+Require theory.categories.
+
+(* Remove this *)
+Local Hint Transparent Equiv : typeclass_instances.
 
 Section contents.
   Context σ `{@Algebra σ v ve vo}.
@@ -11,12 +14,12 @@ Section contents.
   Notation op_type := (op_type (sorts σ)).
   Notation vv := (ua_products.carrier σ bool (λ _: bool, v)).
 
-  Let hint := @ua_products.product_algebra σ bool (λ _, v) _ _ _.
+  Instance hint: Algebra σ vv := @ua_products.product_algebra σ bool (λ _, v) _ _ _.
 
   (* Given an equivalence on the algebra's carrier that respects its setoid equality... *)
 
-  Let hint' (a: sorts σ): Equiv (ua_products.carrier σ bool (fun _: bool => v) a).
-  Proof. apply setoids.product_equiv. intro. apply _. Defined.
+  Instance hint' (a: sorts σ): Equiv (ua_products.carrier σ bool (fun _: bool => v) a).
+  Proof. apply products.dep_prod_equiv. intro. apply _. Defined.
 
   Context (e: ∀ s, relation (v s)).
 
@@ -232,8 +235,8 @@ Section first_iso.
    apply _.
   Qed.
 
-  Definition quot_obj: algebra.Object σ := algebra.object σ A (algebra_equiv:=Φ). (* A/Φ *)
-  Definition subobject: algebra.Object σ := algebra.object σ (ua_subalgebraT.carrier image).
+  Definition quot_obj: algebras.Object σ := algebras.object σ A (algebra_equiv:=Φ). (* A/Φ *)
+  Definition subobject: algebras.Object σ := algebras.object σ (ua_subalgebraT.carrier image).
 
   Program Definition back: subobject ⟶ quot_obj := λ _ X, projT1 (projT2 X).
 
@@ -253,7 +256,7 @@ Section first_iso.
    intros ? [x [? E]]. apply IHo0... simpl in *. rewrite <- E...
   Defined.
 
-  Program Definition forth: quot_obj ⟶ subobject := 
+  Program Definition forth: quot_obj ⟶ subobject :=
     λ a X, existT _ (f a X) (existT _ X (reflexivity _)).
 
   Next Obligation. Proof with try apply _; intuition.

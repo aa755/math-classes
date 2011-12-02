@@ -1,10 +1,10 @@
-Require Import 
+Require Import
   abstract_algebra interfaces.integers interfaces.additional_operations
   implementations.dyadics fast_integers.
 
 Section wolfram_sqrt.
-Context `{Integers Z} `{!RingOrder oZ} `{!TotalOrder oZ}
-  `{precedes_dec : ∀ (x y : Z), Decision (x ≤ y)} 
+Context `{Integers Z} 
+  `{precedes_dec : ∀ (x y : Z), Decision (x ≤ y)}
   `{!NatPowSpec Z (Z⁺) pw}  `{!ShiftLSpec Z (Z⁺) sl}.
 
 Fixpoint root_loop (x : Dyadic Z) (n : nat) : Dyadic Z * Dyadic Z :=
@@ -17,7 +17,7 @@ Fixpoint root_loop (x : Dyadic Z) (n : nat) : Dyadic Z * Dyadic Z :=
   end.
 End wolfram_sqrt.
 
-Definition fast_root_loop := root_loop (Z:=fastZ).
+Definition fast_root_loop := root_loop (Z:=BigZ_Integers.t).
 
 Let n : nat := Eval vm_compute in (10 * 10 * 10 * 10)%nat.
 
@@ -41,23 +41,23 @@ Open Scope bigZ_scope.
 
 Notation bigD := (Dyadic bigZ).
 
-Definition BigD_0 : bigD := (0 $ 0).
-Definition BigD_1 : bigD := (1 $ 0).
-Definition BigD_2 : bigD := (2 $ 0).
+Definition BigD_0 : bigD := (0 ▼ 0).
+Definition BigD_1 : bigD := (1 ▼ 0).
+Definition BigD_2 : bigD := (2 ▼ 0).
 
-Definition BigD_plus (x y : bigD) : bigD := 
+Definition BigD_plus (x y : bigD) : bigD :=
   match BigZ.compare (expo x) (expo y) with
-  | Gt => BigZ.shiftl (mant x) (expo x - expo y) + mant y $ BigZ.min (expo x) (expo y)
-  | _ => mant x + BigZ.shiftl (mant y) (expo y - expo x) $ BigZ.min (expo x) (expo y)
+  | Gt => BigZ.shiftl (mant x) (expo x - expo y) + mant y ▼ BigZ.min (expo x) (expo y)
+  | _ => mant x + BigZ.shiftl (mant y) (expo y - expo x) ▼ BigZ.min (expo x) (expo y)
   end.
 
-Definition BigD_opp (x : bigD) : bigD := -mant x $ expo x.
+Definition BigD_opp (x : bigD) : bigD := -mant x ▼ expo x.
 
-Definition BigD_mult (x y : bigD) : bigD := mant x * mant y $ expo x + expo y.
+Definition BigD_mult (x y : bigD) : bigD := mant x * mant y ▼ expo x + expo y.
 
-Definition BigD_shiftl (x : bigD) (n : bigZ) : bigD := mant x $ expo x + n.
+Definition BigD_shiftl (x : bigD) (n : bigZ) : bigD := mant x ▼ expo x + n.
 
-Definition BigD_compare (x y : bigD) : comparison := 
+Definition BigD_compare (x y : bigD) : comparison :=
   match BigZ.compare (expo x) (expo y) with
   | Gt => BigZ.compare (BigZ.shiftl (mant x) (expo x - expo y)) (mant y)
   | _ => BigZ.compare (mant x) (BigZ.shiftl (mant y) (expo y - expo x))
@@ -88,7 +88,7 @@ Time Eval vm_compute in (
   (snd (root_loop_alt BigD_2 n))
   (snd (root_loop_alt BigD_2 n))).
 
-Definition BigD_4 : bigD := (4 $ 0).
+Definition BigD_4 : bigD := (4 ▼ 0).
 
 Fixpoint root_loop_alt_mult (x : bigD) (n : nat) : bigD * bigD :=
   match n with

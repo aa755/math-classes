@@ -1,12 +1,12 @@
 Require
-  setoids ne_list.
+  theory.setoids ne_list.
 Require Import
-  Morphisms Coq.Setoids.Setoid Program List
+  List
   abstract_algebra util jections.
 Require Export
   ua_basic.
 
-Section for_signature. 
+Section for_signature.
   Variable σ: Signature.
 
   Notation OpType := (OpType (sorts σ)).
@@ -70,7 +70,7 @@ Section for_signature.
    but will want terms /without/ variables when constructing initial objects
    in variety categories generically in theory/ua_initial (which we get by taking
    False as the variable index set). *)
-   
+
   Definition T := Term nat.
   Definition T0 := Term0 nat.
 
@@ -108,7 +108,7 @@ Section for_signature.
      (fold_right Impl (identity_as_eq (entailment_conclusion _ e)) (map identity_as_eq (entailment_premises _ e))).
 
   Definition entailment_as_conjunctive_statement (e: EqEntailment): Statement :=
-    Impl (fold_right Conj (Ext True) (map identity_as_eq (entailment_premises _ e))) 
+    Impl (fold_right Conj (Ext True) (map identity_as_eq (entailment_premises _ e)))
       (identity_as_eq (entailment_conclusion _ e)).
 
   (* The first one (the coercion) converts an entailment of the form (A, B, C |- D) into a statement of
@@ -119,17 +119,15 @@ Section for_signature.
    using the model's implementation and using arbitrary variable assignments: *)
 
   Section Vars.
-
     Context (A: sorts σ → Type) (V: Type) `{e: ∀ a, Equiv (A a)} `{∀ a, Equivalence (e a)}.
 
     Definition Vars := ∀ a, V → A a.
 
-    Global Instance: Equiv Vars :=
+    Global Instance ua_vars_equiv: Equiv Vars :=
      @pointwise_dependent_relation (sorts σ) (λ a, V → A a)
       (λ _, pointwise_relation _ (=)).
 
     Global Instance: Equivalence ((=): relation Vars) := {}.
-
   End Vars.
 
   Definition no_vars x: Vars x False := λ _, False_rect _.
@@ -247,6 +245,10 @@ Section for_signature.
 
   End eval.
 End for_signature.
+
+(* Avoid eager application *)
+Remove Hints ua_vars_equiv : typeclass_instances.
+Hint Extern 0 (Equiv (Vars _ _ _)) => eapply @ua_vars_equiv : typeclass_instances.
 
 (* And with that, we define equational theories and varieties: *)
 

@@ -1,6 +1,6 @@
-Require Import 
-  Program Morphisms abstract_algebra.
-Require setoids.
+Require Import
+  abstract_algebra.
+Require theory.setoids.
 
 Section functor_class.
   Context `{Category C} `{Category D} (map_obj: C → D).
@@ -15,6 +15,8 @@ Section functor_class.
     ; preserves_comp `(f: y ⟶ z) `(g: x ⟶ y): fmap (f ◎ g) = fmap f ◎ fmap g }.
 
 End functor_class.
+
+Typeclasses Transparent Fmap.
 
 (* The usual notational convention for functor application is to use the
 name of the functor to refer to both its object map and its arrow map, relying
@@ -88,7 +90,7 @@ Section compose_functors.
    pose proof (functor_to g).
    pose proof (functor_to f).
    constructor; intros; try apply _.
-     apply (@setoids.compose_morphisms _ _ _ _ _ _)...
+     apply (@setoids.compose_setoid_morphism _ _ _ _ _ _)...
      apply (@functor_morphism _ _ _ _ _ _ _ _ _ _ f _)...
      (* todo: this part really should be automatic *)
     change (fmap f (fmap g (cat_id: a ⟶ a)) = cat_id).

@@ -1,7 +1,7 @@
 Require Import
   RelationClasses Relation_Definitions List Morphisms
   universal_algebra abstract_algebra canonical_names
-  theory.categories categories.variety.
+  theory.categories categories.varieties.
 
 Section contents.
   Context
@@ -35,7 +35,7 @@ Section contents.
     | e_refl o: Reflexive (ee o)
     | e_trans o: Transitive (ee o)
     | e_sym o: Symmetric (ee o)
-    | e_sub o h: Proper ((=) ==> (=) ==> (=)) (App _ _ h o) 
+    | e_sub o h: Proper ((=) ==> (=) ==> (=)) (App _ _ h o)
     | e_law (s: EqEntailment et): et_laws et s → ∀ (v: Vars et OpenTerm0 nat),
       (∀ x, In x (entailment_premises _ s) → eval et v (fst (projT2 x)) = eval et v (snd (projT2 x))) →
         eval et v (fst (projT2 (entailment_conclusion _ s))) = eval et v (snd (projT2 (entailment_conclusion _ s))).
@@ -45,13 +45,12 @@ Section contents.
   Existing Instance e_sym.
   Existing Instance e_trans.
 
-  Instance we: ∀ o, Equivalence (ee o) := {}.
-
   (* .. and then take the specialization at arity 0 for Term0: *)
 
   Instance: ∀ a, Equiv (OpenTerm0 a) := λ a, ee (ne_list.one a).
 
-  Instance: ∀ a, Setoid (OpenTerm0 a) := {}.
+  Instance: ∀ a, Setoid (OpenTerm0 a).
+  Proof. split; apply _. Qed.
 
   (* While this fancy congruence is the one we'll use to make our initial object a setoid,
    in our proofs we will also need to talk about extensionally equal closed term
@@ -93,7 +92,7 @@ Section contents.
   Global Instance: InVariety et OpenTerm0.
   Proof. constructor. apply _. intros. apply laws_hold. assumption. Qed.
 
-  Definition the_object: variety.Object et := variety.object et OpenTerm0.
+  Definition the_object: varieties.Object et := varieties.object et OpenTerm0.
 
 End contents.
 

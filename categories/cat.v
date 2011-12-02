@@ -95,11 +95,13 @@ Section contents.
     Qed.
 
     Instance: Equivalence e := {}.
+    Proof. apply e_refl. apply e_sym. apply e_trans. Defined.
+
     Global Instance: Setoid (x ⟶ y) := {}.
   End more_arrows.
 
   Let obj_iso (x: Object): Equiv x := @iso x _ _ _ _.
-  
+  Existing Instance obj_iso.
   Typeclasses Transparent Arrows.
   Global Instance: ∀ (x y: Object) (a: x ⟶ y), Setoid_Morphism (map_obj a).
   Proof with try apply _.

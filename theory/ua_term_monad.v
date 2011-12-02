@@ -1,5 +1,4 @@
 Require Import
-  Morphisms Coq.Setoids.Setoid
   abstract_algebra universal_algebra interfaces.monads canonical_names.
 
 Section contents.
@@ -18,7 +17,7 @@ Section contents.
 
     Context {A: Type} `{Setoid A}.
 
-    Fixpoint geneq {s s'} (x: Term sign A s) (y: Term sign A s'): Prop := 
+    Fixpoint geneq {s s'} (x: Term sign A s) (y: Term sign A s'): Prop :=
       match x, y with
       | Var v _, Var w _ => v = w
       | App _ z t t', App _ z' t'' t''' => geneq t t'' ∧ geneq t' t'''
@@ -60,10 +59,8 @@ Section contents.
      induction x; simpl; intuition.
     Qed.
 
-    Instance: Equivalence Me := {}.
-
-    Global Instance: Setoid (M A) := {}.
-
+    Global Instance: Setoid (M A).
+    Proof. split; apply _. Qed.
   End equality.
 
   (* For bind, we do the same: *)

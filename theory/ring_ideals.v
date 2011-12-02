@@ -1,118 +1,89 @@
  (* We define what a ring ideal is, show that they yield congruences,
  define what a kernel is, and show that kernels are ideal. *)
-
 Require Import
-  setoid_ring.Ring Morphisms Program
-  ua_congruence abstract_algebra theory.rings.
-Require varieties.ring.
+  Ring abstract_algebra theory.rings.
+Require Export
+   theory.ring_congruence.
 
-Section ideal_congruence. 
-  Context `{Ring R}.
+(* Require ua_congruence varieties.rings. *)
 
-  Add Ring R: (rings.stdlib_ring_theory R).
+Class RingIdeal A (P : A → Prop) `{Ring A} : Prop :=
+  { ideal_proper :> Proper ((=) ==> iff) P
+  ; ideal_NonEmpty :> NonEmpty (sig P)
+  ; ideal_closed_plus_negate : ∀ x y, P x → P y → P (x - y)
+  ; ideal_closed_mult_r : ∀ x y, P x → P (x * y)
+  ; ideal_closed_mult_l: ∀ x y, P y → P (x * y) }.
 
-  Context (P: R → Prop) `{!Proper ((=) ==> iff) P}.
+Notation Factor A P := (Quotient A (λ x y, P (x - y))).
 
-  (* P is an ideal if: *)
-
-  Class Ideal: Prop :=
-    { Ideal_NonEmpty:> NonEmpty P
-    ; Ideal_closed_plus_opp: `(P x → P y → P (x + - y))
-    ; Ideal_closed_mult_r: `(P x → P (x * y))
-    ; Ideal_closed_mult_l: `(P y → P (x * y)) }.
+Section ideal_congruence.
+  Context `{ideal : RingIdeal A P}.
+  Add Ring A2 : (rings.stdlib_ring_theory A).
 
   (* If P is an ideal, we can easily derive some further closedness properties: *)
+  Hint Resolve ideal_closed_plus_negate ideal_closed_mult_l ideal_closed_mult_r.
 
-  Hypothesis ideal: Ideal.
+  Lemma ideal_closed_0 : P 0.
+  Proof. destruct ideal_NonEmpty as [[x Px]]. rewrite <-(plus_negate_r x). intuition. Qed.
+  Hint Resolve ideal_closed_0.
 
-  Hint Resolve Ideal_closed_plus_opp Ideal_closed_mult_l Ideal_closed_mult_r.
-
-  Lemma P0: P 0.
-  Proof. destruct Ideal_NonEmpty. destruct non_empty. rewrite <- (plus_opp_r x). intuition. Qed.
-
-  Hint Resolve P0.
-
-  Lemma Pinv: `(P x → P (- x)).
+  Lemma ideal_closed_negate x : P x → P (-x).
   Proof. intros. rewrite <- rings.plus_0_l. intuition. Qed.
+  Hint Resolve ideal_closed_negate.
 
-  Hint Resolve Pinv.
-
-  Lemma Pplus: `(P x → P y → P (x + y)).
+  Lemma ideal_closed_plus x y : P x → P y → P (x + y).
   Proof. intros. assert (x + y = -(-x + -y)) as E by ring. rewrite E. intuition. Qed.
+  Hint Resolve ideal_closed_plus.
 
-  Hint Resolve Pplus.
-
-  (* Next, we make a congruence: *)
-
-  Program Instance congruence: Equiv R := λ x y, P (x + - y).
-
-  Instance: Equivalence congruence.
-  Proof with intuition.
-   unfold congruence.
-   constructor; repeat intro.
-     rewrite plus_opp_r...
-    rewrite opp_swap_r...
-   assert (x + - z = (x + -y) + (y + - z)) as E by ring. rewrite E...
-  Qed.
-
-  Instance cong_proper: Proper ((=) ==> (=) ==> iff) congruence.
-  Proof. intros ? ? E ? ? E'. unfold congruence. rewrite E, E'. intuition. Qed.
-
-  Instance: Proper (congruence ==> congruence ==> congruence) (+).
+  Global Instance: RingCongruence A (λ x y, P (x - y)).
   Proof.
-   unfold congruence. repeat intro. 
-   assert (x + x0 + - (y + y0) = (x + - y) + (x0 + - y0)) as E by ring.
-   rewrite E. intuition.
+    split.
+        constructor.
+          intros x. now rewrite plus_negate_r.
+         intros x y E. rewrite negate_swap_r. intuition.
+        intros x y z E1 E2. mc_setoid_replace (x - z) with ((x - y) + (y - z)) by ring. intuition.
+       intros ?? E. now rewrite E, plus_negate_r.
+      intros x1 x2 E1 y1 y2 E2.
+      mc_setoid_replace (x1 + y1 - (x2 + y2)) with ((x1 - x2) + (y1 - y2)) by ring. intuition.
+     intros x1 x2 E1 y1 y2 E2.
+     mc_setoid_replace (x1 * y1 - (x2 * y2)) with ((x1 - x2) * y1 + x2 * (y1 - y2)) by ring. intuition.
+    intros x1 x2 E.
+    mc_setoid_replace (-x1 - - x2) with (-(x1 - x2)) by ring. intuition.
   Qed.
 
-  Instance: Proper (congruence ==> congruence ==> congruence) (.*.).
+  Lemma factor_ring_eq (x y : Factor A P) : x = y ↔ P ('x - 'y).
+  Proof. intuition. Qed.
+
+  Lemma factor_ring_eq_0 (x y : Factor A P) : x = 0 ↔ P ('x).
   Proof.
-   unfold congruence. repeat intro. 
-   assert (x * x0 + - (y * y0) = ((x + -y) * x0) + (y * (x0 + - y0))) as E by ring.
-   rewrite E. intuition.
+    transitivity (P ('x - cast (Factor A P) A 0)).
+     intuition.
+    apply ideal_proper. unfold cast. simpl. ring.
   Qed.
 
-  Instance: Proper (congruence ==> congruence) (-).
-  Proof.
-   unfold congruence. repeat intro.
-   assert (- x + - - y = -(x + -y)) as E by ring.
-   rewrite E. intuition.
-  Qed.
+(*
+  Let hint := rings.encode_operations R.
 
-  Let hint := ring.encode_operations R.
-
-  Instance: Congruence ring.sig (λ _, congruence).
-  Proof.
-   constructor. intro. apply _. apply ring.encode_algebra_and_ops.
-   assert (∀ x y, @equiv _ e x y → congruence x y) as e_cong.
-     unfold congruence. intros ? ? E. rewrite E, plus_opp_r. intuition.
-   repeat (constructor; try apply _); repeat intro; apply e_cong; try firstorder.
-  Qed.
-
-  Instance: Ring R (e:=congruence).
-  Proof.
-   apply (@ring.decode_variety_and_ops (λ _, R) (λ _, congruence) hint).
-   pose proof (ring.encode_variety_and_ops R).
-   apply (quotient_variety ring.theory); try apply _.
-   intros ? []; intuition.
-  Qed.
-
+  Instance: Congruence rings.sig (λ _, congr_equiv).
+  Proof. constructor; intros; apply _. Qed.
+*)
 End ideal_congruence.
 
-Section kernel_is_ideal. 
+Section kernel_is_ideal.
   Context `{Ring A} `{Ring B} `{f : A → B} `{!SemiRing_Morphism f}.
 
-  Add Ring A: (rings.stdlib_ring_theory A).
-  Add Ring B: (rings.stdlib_ring_theory B).
+  Add Ring A3 : (rings.stdlib_ring_theory A).
+  Add Ring B3 : (rings.stdlib_ring_theory B).
 
-  Definition kernel: A → Prop := (= 0) ∘ f.
+  Definition kernel : A → Prop := (= 0) ∘ f.
 
-  Global Instance: Ideal kernel.
+  Global Instance: RingIdeal A kernel.
   Proof with ring.
    unfold kernel, compose, flip.
-   repeat split.
-      exists 0. apply preserves_0.
-     intros ?? E E'. rewrite preserves_plus, preserves_opp, E, E'...
+   split.
+       intros ? ? E. now rewrite E.
+      split. exists (0:A). apply preserves_0.
+     intros ?? E E'. rewrite preserves_plus, preserves_negate, E, E'...
     intros ?? E. rewrite preserves_mult, E...
    intros ?? E. rewrite preserves_mult, E...
   Qed.

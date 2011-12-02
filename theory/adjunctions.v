@@ -1,12 +1,12 @@
 (** We prove the equivalence of the two definitions of adjunction. *)
-
 Require Import
-  Relation_Definitions Morphisms Coq.Setoids.Setoid Program
-  abstract_algebra setoids interfaces.functors categories
+  abstract_algebra theory.setoids interfaces.functors theory.categories
   workaround_tactics theory.jections.
 Require dual.
 
-Hint Unfold id compose: typeclass_instances. (* todo: move *)
+Local Hint Unfold id compose: typeclass_instances. (* todo: move *)
+Local Existing Instance injective_mor.
+Local Existing Instance surjective_mor.
 
 Lemma equal_because_sole `{Setoid T} (P: T → Prop) x: is_sole P x → forall y z, P y → P z → y = z.
 Proof. firstorder. Qed. (* todo: move *)
@@ -20,12 +20,11 @@ Section for_φAdjunction.
 
   Implicit Arguments φ [[d] [c]].
 
-  Let hint''''' := φ_adjunction_bijective F G.
-  Let hint'''' x y: Injective (@φ x y) := _.
-  Let hint := φ_adjunction_left_functor F G.
-  Let hint' := φ_adjunction_right_functor F G.
-  Let hint'' := functor_from G.
-  Let hint''' := functor_to G.
+  Instance: forall c d, Bijective (@φ c d) := φ_adjunction_bijective F G.
+  Instance: Functor F F'  := φ_adjunction_left_functor F G.
+  Instance: Functor G G'  := φ_adjunction_right_functor F G.
+  Instance: Category D := functor_from G.
+  Instance: Category C := functor_to G.
    (* Waiting for the new proof engine ... *)
 
   Lemma φ_adjunction_natural_right_inv `(g: c ⟶ G d) `(h: c' ⟶ c): φ⁻¹ (g ◎ h) = φ⁻¹ g ◎ fmap F h.
@@ -83,12 +82,12 @@ Section for_φAdjunction.
    constructor; unfold compose.
     rewrite <- (φ_in_terms_of_η ((φ ⁻¹) f)).
     symmetry.
-    apply surjective_applied.
+    apply (surjective_applied _).
    intros ? E.
    rewrite E.
    rewrite <- (φ_in_terms_of_η y).
    symmetry.
-   apply bijective_applied.
+   apply (bijective_applied _).
   Qed.
 
   Instance φAdjunction_ηAdjunction: ηAdjunction F G η univwit := {}.
@@ -97,9 +96,9 @@ Section for_φAdjunction.
   Proof with try apply _.
    constructor; try apply _; intro x.
     rewrite <- @φ_in_terms_of_η.
-    unfold ε. apply surjective_applied.
+    unfold ε. apply (surjective_applied _).
    rewrite <- @φ_in_terms_of_ε.
-   unfold η. apply surjective_applied.
+   unfold η. apply (surjective_applied _).
   Qed.
 
   (* On a side note, if we let F and G map between the duals of C and D, the adjunction is reversed: *)
@@ -113,18 +112,16 @@ Section for_φAdjunction.
     change (d ⟶ G c) in f.
     change ((φ ⁻¹) (f ◎ k) = (φ ⁻¹) f ◎ fmap F k).
     apply (injective (@φ d' c)).
-    rewrite surjective_applied.
+    rewrite (surjective_applied _).
     rewrite φ_adjunction_natural_right...
-    rewrite surjective_applied.
-    reflexivity.
+    now rewrite (surjective_applied _).
    change (c ⟶ c') in h.
    change (d ⟶ G c) in f.
    change ((φ ⁻¹) (fmap G h ◎ f) = h ◎ (φ ⁻¹) f).
    apply (injective (@φ d c')).
-   rewrite surjective_applied.
+   rewrite (surjective_applied _).
    rewrite φ_adjunction_natural_left...
-   rewrite surjective_applied.
-   reflexivity.
+   now rewrite (surjective_applied _).
   Qed.
 
 End for_φAdjunction.
@@ -133,10 +130,10 @@ Section for_ηAdjunction.
 
   Context `(ηAdjunction).
 
-  Let hint := η_adjunction_left_functor F G.
-  Let hint' := η_adjunction_right_functor F G.
-  Let hint'' := functor_from G.
-  Let hint''' := functor_to G.
+  Instance: Functor F F'  := η_adjunction_left_functor F G.
+  Instance: Functor G G'  := η_adjunction_right_functor F G.
+  Instance: Category D := functor_from G.
+  Instance: Category C := functor_to G.
 
   Let φ x a (g: F x ⟶ a): (x ⟶ G a) := fmap G g ◎ η x.
 
@@ -184,12 +181,12 @@ Section for_ηεAdjunction.
 
   Context `(ηεAdjunction).
 
-  Let hint := ηε_adjunction_left_functor F G.
-  Let hint' := ηε_adjunction_right_functor F G.
-  Let hint'' := functor_from G.
-  Let hint''' := functor_to G.
-  Let hint'''' := ηε_adjunction_η_natural F G.
-  Let hint''''' := ηε_adjunction_ε_natural F G.
+  Instance: Functor F F'  := ηε_adjunction_left_functor F G.
+  Instance: Functor G G'  := ηε_adjunction_right_functor F G.
+  Instance: Category D := functor_from G.
+  Instance: Category C := functor_to G.
+  Instance: NaturalTransformation η := ηε_adjunction_η_natural F G.
+  Instance: NaturalTransformation ε := ηε_adjunction_ε_natural F G.
 
   Let φ `(f: F c ⟶ d): (c ⟶ G d) := fmap G f ◎ η c.
   Instance uniwit c d: Inverse (φ c d) := λ f, ε d ◎ fmap F f.

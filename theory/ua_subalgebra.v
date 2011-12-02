@@ -1,8 +1,8 @@
 Require Import
-  RelationClasses Morphisms Program
+  RelationClasses
   universal_algebra ua_homomorphisms canonical_names theory.categories abstract_algebra.
 Require
-  categories.algebra forget_algebra.
+  categories.algebras forget_algebra.
 
 Section subalgebras.
   Context `{Algebra sign A} (P: ∀ s, A s → Prop).
@@ -34,7 +34,7 @@ Section subalgebras.
 
   (* Our new algebra's elements are just those for which P holds: *)
 
-  Definition carrier s := sig (P s). 
+  Definition carrier s := sig (P s).
 
   Hint Unfold carrier: typeclass_instances.
 
@@ -80,18 +80,18 @@ Section subalgebras.
 
   (* Which is mono because proj is injective. *)
 
-  Instance: Injective (proj i).
+  Instance: Injective ((λ i, proj i) i).
   Proof.
    constructor. firstorder.
-   constructor; try apply _.
-   firstorder.
+   change (@Setoid_Morphism ((λ i, @sig (A i) (P i)) i) (A i) ((λ i, @sig_equiv (A i) (e i) (P i)) i) (e i) (proj i)).
+   apply _.
   Qed.
 
-  Global Instance: Mono (algebra.arrow _ proj).
+  Global Instance: Mono (algebras.arrow _ proj) := {}.
   Proof.
    apply forget_algebra.mono.
    apply categories.product.mono.
-   intro. apply setoid.mono.
+   intro. apply setoids.mono.
    simpl. apply _.
   Qed. (* this really should be completely automatic. *)
 End subalgebras.

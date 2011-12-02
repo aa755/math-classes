@@ -1,8 +1,8 @@
 Require
-  theory.fields stdlib_rationals.
+  theory.fields stdlib_rationals theory.int_pow.
 Require Import
   QArith QSig
-  abstract_algebra 
+  abstract_algebra interfaces.orders
   interfaces.integers interfaces.rationals interfaces.additional_operations
   theory.rings theory.rationals.
 
@@ -11,12 +11,12 @@ Module QType_Rationals (Import anyQ: QType).
 Module Import props := QProperties anyQ.
 
 Instance QType_equiv: Equiv t := eq.
-Instance QType_plus: RingPlus t := add.
-Instance QType_0: RingZero t := zero.
-Instance QType_1: RingOne t := one.
-Instance QType_mult: RingMult t := mul.
-Instance QType_opp: GroupInv t := opp.
-Instance QType_mult_inv: MultInv t := λ x, inv (proj1_sig x).
+Instance QType_plus: Plus t := add.
+Instance QType_0: Zero t := zero.
+Instance QType_1: One t := one.
+Instance QType_mult: Mult t := mul.
+Instance QType_negate: Negate t := opp.
+Instance QType_dec_recip: DecRecip t := inv.
 
 Instance: Setoid t := {}.
 
@@ -36,21 +36,24 @@ Proof with intuition. apply Qeq_bool_iff... apply Qeq_bool_neq... Qed.
 Ltac unfold_equiv := unfold equiv, QType_equiv, eq.
 
 Add Ring Q : Qsrt.
-Lemma anyQ_field_theory: field_theory zero one add mul sub opp div inv eq.
+Lemma anyQ_field_theory: field_theory zero one add mul sub opp anyQ.div inv eq.
   (* No idea why this is missing in QSig. *)
 Proof.
- constructor. 
+ constructor.
     constructor; intros; qify; ring.
    exact neq_1_0.
   exact div_mul_inv.
  exact mul_inv_diag_l.
 Qed.
 
-Instance: Field t.
-Proof. apply (fields.from_stdlib_field_theory anyQ_field_theory). Qed.
+Instance: DecField t.
+Proof.
+  refine (dec_fields.from_stdlib_field_theory anyQ_field_theory _).
+  unfold eq. now rewrite spec_inv, spec_0.
+Qed.
 
 (* Type-classified facts about to_Q/of_Q: *)
-Instance inject_QType_Q: Coerce t Q := to_Q.
+Instance inject_QType_Q: Cast t Q := to_Q.
 
 Instance: Setoid_Morphism to_Q.
 Proof. constructor; try apply _. intros x y. auto. Qed.
@@ -58,7 +61,7 @@ Proof. constructor; try apply _. intros x y. auto. Qed.
 Instance: SemiRing_Morphism to_Q.
 Proof. repeat (constructor; try apply _); intros; qify; reflexivity. Qed.
 
-Instance inject_Q_QType: Coerce Q t := of_Q.
+Instance inject_Q_QType: Cast Q t := of_Q.
 Instance: Inverse to_Q := of_Q.
 
 Instance: Surjective to_Q.
@@ -72,7 +75,7 @@ Instance: Bijective to_Q := {}.
 Instance: Inverse of_Q := to_Q.
 
 Instance: Bijective of_Q.
-Proof. apply jections.flip_bijection, _. Qed.
+Proof. apply jections.flip_bijection. Qed.
 
 Instance: SemiRing_Morphism of_Q.
 Proof. change (SemiRing_Morphism (to_Q⁻¹)). split; apply _. Qed.
@@ -80,51 +83,50 @@ Proof. change (SemiRing_Morphism (to_Q⁻¹)). split; apply _. Qed.
 Instance: RationalsToFrac t := iso_to_frac of_Q.
 Instance: Rationals t := iso_is_rationals of_Q.
 
-Program Instance Qtype_dec_mult_inv: DecMultInv t := inv.
-Next Obligation.
-  split; intros E. 
-   rewrite commutativity. now apply mul_inv_diag_l.
-  rewrite E. unfold_equiv. now qify.
-Qed.
-
 (* Order *)
-Instance QType_le: Order t := le.
+Instance QType_le: Le t := le.
+Instance QType_lt: Lt t := lt.
 
 Instance: Proper ((=) ==> (=) ==> iff) QType_le.
-Proof. 
-  intros ? ? E1 ? ? E2. unfold QType_le, le, equiv, QType_equiv, eq in *. 
+Proof.
+  intros ? ? E1 ? ? E2. unfold QType_le, le, equiv, QType_equiv, eq in *.
   now rewrite E1, E2.
 Qed.
+
+Instance: SemiRingOrder QType_le.
+Proof. now apply (rings.projected_ring_order to_Q). Qed.
 
 Instance: OrderEmbedding to_Q.
 Proof. now repeat (split; try apply _). Qed.
 
-Instance: RingOrder QType_le.
-Proof rings.embed_ringorder to_Q.
+Instance: TotalRelation QType_le.
+Proof. now apply (maps.projected_total_order to_Q). Qed.
 
-Instance: TotalOrder QType_le.
-Proof maps.embed_totalorder to_Q.
-
-Lemma QType_lt_coincides x y : lt x y ↔ x < y.
-Proof. unfold lt. now rewrite stdlib_rationals.Qlt_coincides. Qed.
+Instance: FullPseudoSemiRingOrder QType_le QType_lt.
+Proof.
+  rapply semirings.dec_full_pseudo_srorder.
+  intros x y.
+  change (to_Q x < to_Q y ↔ x ≤ y ∧ x ≠ y).
+  now rewrite orders.lt_iff_le_ne.
+Qed.
 
 (* Efficient comparison *)
-Program Instance: ∀ x y: t, Decision (x ≤ y) := λ x y, match (compare x y) with
+Program Instance: ∀ x y: t, Decision (x ≤ y) := λ x y,
+  match compare x y with
   | Gt => right _
   | _ => left _
   end.
 Next Obligation.
   rewrite spec_compare in *.
   destruct (Qcompare_spec (to_Q x) (to_Q y)); try discriminate.
-  apply orders.not_precedes_sprecedes.
-  now apply QType_lt_coincides.
+  now apply orders.lt_not_le_flip.
 Qed.
 
 Next Obligation.
   rewrite spec_compare in *.
   destruct (Qcompare_spec (to_Q x) (to_Q y)); try discriminate; try intuition.
    now apply Zeq_le.
-  now apply orders.sprecedes_weaken, QType_lt_coincides.
+  now apply orders.lt_le.
 Qed.
 
 (* Efficient [int_pow] *)
@@ -136,7 +138,7 @@ Proof.
     intros. now rewrite spec_power, preserves_1.
    intros. rewrite spec_power, preserves_0.
    now apply int_pow_base_0.
-  intros ? ? E. rewrite preserves_mult, 2!spec_power. 
+  intros ? ? E. rewrite preserves_mult, 2!spec_power.
   rewrite preserves_0 in E.
   now apply int_pow_S.
 Qed.
@@ -150,7 +152,7 @@ Proof.
    intros. rewrite preserves_0. apply int_pow_0.
   intros ? ?. rewrite preserves_plus, preserves_1.
   apply int_pow.int_pow_S_nonneg.
-  apply naturals.to_semiring_nonneg.
+  apply nat_int.to_semiring_nonneg.
 Qed.
 
 End QType_Rationals.

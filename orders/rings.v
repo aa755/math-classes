@@ -1,233 +1,303 @@
 Require Import
-  Relation_Definitions Morphisms setoid_ring.Ring Program Coq.Setoids.Setoid
-  abstract_algebra theory.rings.
-Require Export 
-  orders.orders orders.maps.
+  Ring abstract_algebra interfaces.orders theory.rings.
+Require Export
+  orders.semirings.
 
-Section contents.
-Context `{Ring R} `{!RingOrder o}.
-Add Ring R : (stdlib_ring_theory R).
+Section from_ring_order.
+  Context `{Ring R} `{!PartialOrder Rle}
+    (plus_spec : ∀ z, OrderPreserving (z +))
+    (mult_spec : ∀ x y, PropHolds (0 ≤ x) → PropHolds (0 ≤ y) → PropHolds (0 ≤ x * y)).
 
-Lemma flip_opp x y : -y ≤ -x ↔ x ≤ y.
-Proof.
-  assert (∀ a b, a ≤ b → -b ≤ -a).
-   intros a b E.
-   setoid_replace (-b) with (-a + -b + a) by ring.
-   setoid_replace (-a) with (-a + -b + b) at 2 by ring.
-   now apply (order_preserving _).
-  split; intros; auto.
-  rewrite <-(opp_involutive x), <-(opp_involutive y); auto.
-Qed.
+  Lemma from_ring_order: SemiRingOrder (≤).
+  Proof.
+    repeat (split; try apply _).
+     intros x y E. exists (- x + y).
+     now rewrite associativity, plus_negate_r, plus_0_l.
+    intros x y E.
+    rewrite <-(plus_0_l x), <-(plus_0_l y), <-!(plus_negate_l z), <-!associativity.
+    now apply (order_preserving _).
+  Qed.
+End from_ring_order.
 
-Lemma flip_opp_strict x y : -y < -x ↔ x < y.
-Proof.
-  assert (∀ a b, a < b → -b < -a).
-   intros a b [E1 E2].
-   split.
-    now apply flip_opp.
-   intros E3. apply E2. apply (injective (-)). now symmetry.
-  split; intros; auto.
-  rewrite <-(opp_involutive x), <-(opp_involutive y); auto.
-Qed.
+Section from_strict_ring_order.
+  Context `{Ring R} `{!StrictSetoidOrder Rle}
+    (plus_spec : ∀ z, StrictlyOrderPreserving (z +))
+    (mult_spec : ∀ x y, PropHolds (0 < x) → PropHolds (0 < y) → PropHolds (0 < x * y)).
 
-Lemma flip_nonneg_opp x : 0 ≤ x ↔ -x ≤ 0. 
-Proof.
-  split; intros E.
-   rewrite <- opp_0. now apply flip_opp.
-  apply flip_opp. now rewrite opp_0.
-Qed.
+  Lemma from_strict_ring_order: StrictSemiRingOrder (<).
+  Proof.
+    repeat (split; try apply _).
+     intros x y E. exists (- x + y).
+     now rewrite associativity, plus_negate_r, plus_0_l.
+    intros x y E.
+    rewrite <-(plus_0_l x), <-(plus_0_l y), <-!(plus_negate_l z), <-!associativity.
+    now apply (strictly_order_preserving _).
+  Qed.
+End from_strict_ring_order.
 
-Lemma flip_nonpos_opp x : x ≤ 0 ↔ 0 ≤ -x. 
-Proof.
-  rewrite <-(opp_involutive x) at 1. 
-  split; intros; now apply flip_nonneg_opp.
-Qed.
+Section from_pseudo_ring_order.
+  Context `{Ring R} `{Apart R} `{!PseudoOrder Rlt}
+    (plus_spec : ∀ z, StrictlyOrderPreserving (z +))
+    (mult_ext : StrongSetoid_BinaryMorphism (.*.))
+    (mult_spec : ∀ x y, PropHolds (0 < x) → PropHolds (0 < y) → PropHolds (0 < x * y)).
 
-Lemma flip_pos_opp x : 0 < x ↔ -x < 0. 
-Proof.
-  split; intros E.
-   rewrite <- opp_0. now apply flip_opp_strict.
-  apply flip_opp_strict. now rewrite opp_0.
-Qed.
+  Lemma from_pseudo_ring_order: PseudoSemiRingOrder (<).
+  Proof.
+    repeat (split; try apply _).
+     intros x y E. exists (- x + y).
+     now rewrite associativity, plus_negate_r, plus_0_l.
+    intros x y E.
+    rewrite <-(plus_0_l x), <-(plus_0_l y), <-!(plus_negate_l z), <-!associativity.
+    now apply (strictly_order_preserving _).
+  Qed.
+End from_pseudo_ring_order.
 
-Lemma flip_neg_opp x : x < 0 ↔ 0 < -x. 
-Proof.
-  rewrite <-(opp_involutive x) at 1. 
-  split; intros; now apply flip_pos_opp.
-Qed.
+Section from_full_pseudo_ring_order.
+  Context `{Ring R} `{Apart R} `{!FullPseudoOrder Rle Rlt}
+    (plus_spec : ∀ z, StrictlyOrderPreserving (z +))
+    (mult_ext : StrongSetoid_BinaryMorphism (.*.))
+    (mult_spec : ∀ x y, PropHolds (0 < x) → PropHolds (0 < y) → PropHolds (0 < x * y)).
 
-Lemma flip_minus_r (x y z : R) : z ≤ y - x ↔ z + x ≤ y.
-Proof.
-  split; intros E.
-   rewrite commutativity.
-   setoid_replace y with (x + (y - x)) by ring.
-   now apply (order_preserving _).
-  rewrite commutativity.
-  setoid_replace z with (-x + (z + x)) by ring.
-  now apply (order_preserving _).
-Qed.
-
-Lemma flip_minus_l (x y z : R) : y - x ≤ z ↔ y ≤ z + x.
-Proof.
-  rewrite <-(opp_involutive x) at 2.
-  split; now apply flip_minus_r.
-Qed.
-
-Lemma flip_nonneg_minus (x y : R) : 0 ≤ y - x ↔ x ≤ y.
-Proof.
-  setoid_replace x with (0 + x) at 2 by ring.
-  now apply flip_minus_r.
-Qed.
-
-Lemma flip_nonpos_minus (x y : R) : y - x ≤ 0 ↔ y ≤ x.
-Proof.
-  setoid_replace x with (0 + x) at 2 by ring.
-  now apply flip_minus_l.
-Qed.
-
-Lemma nonneg_minus_compat (x y z : R) : 0 ≤ z → x ≤ y → x - z ≤ y.
-Proof.
-  intros E1 E2.
-  rewrite commutativity.
-  setoid_replace y with (-z + (y + z)) by ring.
-  apply (order_preserving (-(z) +)).
-  transitivity y; trivial.
-  setoid_replace y with (y + 0) at 1 by ring.
-  now apply (order_preserving (y +)).
-Qed.
-
-Lemma nonneg_minus_compat_back (x y z : R) : 0 ≤ z → x ≤ y - z → x ≤ y.
-Proof.
-  intros E1 E2.
-  transitivity (y - z); trivial.
-  now apply nonneg_minus_compat.
-Qed.
-
-Lemma between_nonneg (x : R) : 0 ≤ x → -x ≤ x.
-Proof.
-  intros E.
-  transitivity 0; trivial.
-  now apply flip_nonneg_opp.
-Qed.
-
-Lemma between_pos (x : R) : 0 < x → -x < x.
-Proof.
-  intros E.
-  transitivity 0; trivial.
-  now apply flip_pos_opp.
-Qed.
-
-Lemma precedes_plus x y : x ≤ y ↔ ∃ z, 0 ≤ z ∧ y = x + z.
-Proof.
-  split.
-   intros E.
-   exists (y - x). split.
-    now apply flip_nonneg_minus.
-   ring.
-  intros [z [Ez1 Ez2]].
-  rewrite Ez2, <-(plus_0_r x) at 1.
-  now apply (order_preserving (x +)).
-Qed.
-
-Global Instance: SemiRingOrder o.
-Proof.
-  repeat (split; try apply _). 
-    apply precedes_plus. 
-   apply precedes_plus.
-  apply ringorder_mult.
-Qed.
-
-Lemma nonpos_mult x y : x ≤ 0 → y ≤ 0 → 0 ≤ x * y.
-Proof.
-  intros E F.
-  setoid_replace (x * y) with (-x * -y) by ring.
-  apply ringorder_mult; apply flip_nonpos_opp; assumption.
-Qed.
-
-Lemma nonpos_nonneg_mult x y : x ≤ 0 → 0 ≤ y → x * y ≤ 0.
-Proof with auto.
-  intros E F. 
-  apply flip_nonpos_opp. 
-  rewrite opp_mult_distr_l. 
-  apply ringorder_mult...
-  apply flip_nonpos_opp...
-Qed.
-
-Lemma nonneg_nonpos_mult x y : 0 ≤ x → y ≤ 0 → x * y ≤ 0.
-Proof.
-  intros E F.
-  rewrite commutativity. 
-  now apply nonpos_nonneg_mult.
-Qed.
-
-Context `{!TotalOrder o}.
-
-Lemma square_nonneg x : 0 ≤ x * x.
-Proof.
-  destruct (total_order 0 x).
-   now apply ringorder_mult.
-  setoid_replace (x * x) with (-x * -x) by ring.
-  now apply ringorder_mult; apply flip_nonpos_opp.
-Qed.
-
-Lemma eq_opp_self (z : R) : z = -z → z = 0.
-Proof.
-  intros E.
-  apply (antisymmetry (≤)); destruct (total_order 0 z); try easy.
-   rewrite E. now apply flip_nonneg_opp.
-  rewrite E. now apply flip_nonpos_opp.
-Qed.
-
-Lemma flip_nonpos_mult_l x y z : z ≤ 0 → x ≤ y → z * y ≤ z * x.
-Proof.
-  intros E1 E2.
-  apply srorder_plus in E2. destruct E2 as [a [Ea1 Ea2]]. 
-  rewrite Ea2.
-  apply srorder_plus. exists (-a * z).
-  split.
-   apply nonpos_mult; trivial.
-   now apply flip_nonneg_opp.
-  ring.
-Qed.
-
-Lemma flip_nonpos_mult_r x y z : z ≤ 0 → x ≤ y → y * z ≤ x * z.
-Proof.
-  rewrite 2!(commutativity _ z).
-  now apply flip_nonpos_mult_l.
-Qed.
-End contents.
-
-Section another_ring.
-  Context `{Ring R} `{!RingOrder o} `{Ring R2} `{o2 : Order R2}.
-
-  Lemma embed_ringorder (f : R2 → R) `{!SemiRing_Morphism f} `{!Injective f} `{!OrderEmbedding f} : 
-    RingOrder o2.
+  Lemma from_full_pseudo_ring_order: FullPseudoSemiRingOrder (≤) (<).
   Proof.
     split.
-      apply (embed_partialorder f).
-     repeat (split; try apply _). intros x y E. 
-     apply (order_preserving_back f). rewrite 2!preserves_plus.
-     apply ringorder_plus. now apply (order_preserving f).
-    intros x E1 y E2. 
-    apply (order_preserving_back f). rewrite preserves_mult, preserves_0.
-    apply ringorder_mult; rewrite <-(preserves_0 (f:=f)); now apply (order_preserving f).
+     now apply from_pseudo_ring_order.
+    now apply le_iff_not_lt_flip.
+  Qed.
+End from_full_pseudo_ring_order.
+
+Section ring_order.
+  Context `{Ring R} `{!SemiRingOrder Rle}.
+  Add Ring R : (stdlib_ring_theory R).
+
+  Lemma flip_le_negate x y : -y ≤ -x ↔ x ≤ y.
+  Proof.
+    assert (∀ a b, a ≤ b → -b ≤ -a).
+     intros a b E.
+     setoid_replace (-b) with (-a + -b + a) by ring.
+     setoid_replace (-a) with (-a + -b + b) at 2 by ring.
+     now apply (order_preserving _).
+    split; intros; auto.
+    rewrite <-(negate_involutive x), <-(negate_involutive y); auto.
   Qed.
 
-  Context `{!RingOrder o2} {f : R → R2} `{!SemiRing_Morphism f}.
+  Lemma flip_nonneg_negate x : 0 ≤ x ↔ -x ≤ 0.
+  Proof.
+    split; intros E.
+     rewrite <-negate_0. now apply flip_le_negate.
+    apply flip_le_negate. now rewrite negate_0.
+  Qed.
 
-  Lemma preserving_back_preserves_nonneg : (∀ x, 0 ≤ f x → 0 ≤ x) → OrderPreservingBack f.
+  Lemma flip_nonpos_negate x : x ≤ 0 ↔ 0 ≤ -x.
+  Proof.
+    rewrite <-(negate_involutive x) at 1.
+    split; intros; now apply flip_nonneg_negate.
+  Qed.
+
+  Lemma flip_le_minus_r (x y z : R) : z ≤ y - x ↔ z + x ≤ y.
+  Proof.
+    split; intros E.
+     rewrite commutativity.
+     setoid_replace y with (x + (y - x)) by ring.
+     now apply (order_preserving _).
+    rewrite commutativity.
+    setoid_replace z with (-x + (z + x)) by ring.
+    now apply (order_preserving _).
+  Qed.
+
+  Lemma flip_le_minus_l (x y z : R) : y - x ≤ z ↔ y ≤ z + x.
+  Proof.
+    rewrite <-(negate_involutive x) at 2.
+    split; now apply flip_le_minus_r.
+  Qed.
+
+  Lemma flip_nonneg_minus (x y : R) : 0 ≤ y - x ↔ x ≤ y.
+  Proof.
+    setoid_replace x with (0 + x) at 2 by ring.
+    now apply flip_le_minus_r.
+  Qed.
+
+  Lemma flip_nonpos_minus (x y : R) : y - x ≤ 0 ↔ y ≤ x.
+  Proof.
+    setoid_replace x with (0 + x) at 2 by ring.
+    now apply flip_le_minus_l.
+  Qed.
+
+  Lemma nonneg_minus_compat (x y z : R) : 0 ≤ z → x ≤ y → x - z ≤ y.
+  Proof.
+    intros E1 E2.
+    rewrite commutativity.
+    setoid_replace y with (-z + (y + z)) by ring.
+    apply (order_preserving (-(z) +)).
+    transitivity y; trivial.
+    setoid_replace y with (y + 0) at 1 by ring.
+    now apply (order_preserving (y +)).
+  Qed.
+
+  Lemma nonneg_minus_compat_back (x y z : R) : 0 ≤ z → x ≤ y - z → x ≤ y.
+  Proof.
+    intros E1 E2.
+    transitivity (y - z); trivial.
+    now apply nonneg_minus_compat.
+  Qed.
+
+  Lemma between_nonneg (x : R) : 0 ≤ x → -x ≤ x.
   Proof.
     intros E.
-    repeat (split; try apply _).
-    intros x y F.
-    apply flip_nonneg_minus. apply E.
-    rewrite preserves_plus, preserves_opp.
-    apply flip_nonneg_minus. apply F.
+    transitivity 0; trivial.
+    now apply flip_nonneg_negate.
+  Qed.
+End ring_order.
+
+Section strict_ring_order.
+  Context `{Ring R} `{!StrictSemiRingOrder Rlt}.
+  Add Ring Rs : (stdlib_ring_theory R).
+
+  Lemma flip_lt_negate x y : -y < -x ↔ x < y.
+  Proof.
+    assert (∀ a b, a < b → -b < -a).
+     intros a b E.
+     setoid_replace (-b) with (-a + -b + a) by ring.
+     setoid_replace (-a) with (-a + -b + b) at 2 by ring.
+     now apply (strictly_order_preserving _).
+    split; intros; auto.
+    rewrite <-(negate_involutive x), <-(negate_involutive y); auto.
   Qed.
 
-  Lemma preserves_ge_opp1 `{!OrderPreserving f} x : -1 ≤ x → -1 ≤ f x.
-  Proof. intros. rewrite <-(preserves_1 (f:=f)), <-preserves_opp. now apply (order_preserving f). Qed.
+  Lemma flip_pos_negate x : 0 < x ↔ -x < 0.
+  Proof.
+    split; intros E.
+     rewrite <- negate_0. now apply flip_lt_negate.
+    apply flip_lt_negate. now rewrite negate_0.
+  Qed.
 
-  Lemma preserves_le_opp1 `{!OrderPreserving f} x : x ≤ -1 → f x ≤ -1.
-  Proof. intros. rewrite <-(preserves_1 (f:=f)), <-preserves_opp. now apply (order_preserving f). Qed.
-End another_ring.
+  Lemma flip_neg_negate x : x < 0 ↔ 0 < -x.
+  Proof.
+    rewrite <-(negate_involutive x) at 1.
+    split; intros; now apply flip_pos_negate.
+  Qed.
+
+  Lemma flip_lt_minus_r (x y z : R) : z < y - x ↔ z + x < y.
+  Proof.
+    split; intros E.
+     rewrite commutativity.
+     setoid_replace y with (x + (y - x)) by ring.
+     now apply (strictly_order_preserving _).
+    rewrite commutativity.
+    setoid_replace z with (-x + (z + x)) by ring.
+    now apply (strictly_order_preserving _).
+  Qed.
+
+  Lemma flip_lt_minus_l (x y z : R) : y - x < z ↔ y < z + x.
+  Proof.
+    rewrite <-(negate_involutive x) at 2.
+    split; now apply flip_lt_minus_r.
+  Qed.
+
+  Lemma flip_pos_minus (x y : R) : 0 < y - x ↔ x < y.
+  Proof.
+    setoid_replace x with (0 + x) at 2 by ring.
+    now apply flip_lt_minus_r.
+  Qed.
+
+  Lemma flip_neg_minus (x y : R) : y - x < 0 ↔ y < x.
+  Proof.
+    setoid_replace x with (0 + x) at 2 by ring.
+    now apply flip_lt_minus_l.
+  Qed.
+
+  Lemma pos_minus_compat (x y z : R) : 0 < z → x < y → x - z < y.
+  Proof.
+    intros E1 E2.
+    rewrite commutativity.
+    setoid_replace y with (-z + (y + z)) by ring.
+    apply (strictly_order_preserving (-(z) +)).
+    transitivity y; trivial.
+    setoid_replace y with (y + 0) at 1 by ring.
+    now apply (strictly_order_preserving (y +)).
+  Qed.
+
+  Lemma between_pos (x : R) : 0 < x → -x < x.
+  Proof.
+    intros E.
+    transitivity 0; trivial.
+    now apply flip_pos_negate.
+  Qed.
+End strict_ring_order.
+
+Section another_ring_order.
+  Context `{Ring R1} `{!SemiRingOrder R1le} `{Ring R2} `{R2le : Le R2}.
+
+  Lemma projected_ring_order (f : R2 → R1) `{!SemiRing_Morphism f} `{!Injective f} :
+    (∀ x y, x ≤ y ↔ f x ≤ f y) → SemiRingOrder R2le.
+  Proof.
+    intros P. apply (projected_srorder f P).
+    intros x y E. exists (-x + y). now rewrite associativity, plus_negate_r, plus_0_l.
+  Qed.
+
+  Context `{!SemiRingOrder R2le} {f : R1 → R2} `{!SemiRing_Morphism f}.
+
+  Lemma reflecting_preserves_nonneg : (∀ x, 0 ≤ f x → 0 ≤ x) → OrderReflecting f.
+  Proof.
+    intros E. repeat (split; try apply _). intros x y F.
+    apply flip_nonneg_minus, E.
+    rewrite preserves_plus, preserves_negate.
+    now apply flip_nonneg_minus, F.
+  Qed.
+
+  Lemma preserves_ge_negate1 `{!OrderPreserving f} x : -1 ≤ x → -1 ≤ f x.
+  Proof. intros. rewrite <-(preserves_1 (f:=f)), <-preserves_negate. now apply (order_preserving f). Qed.
+
+  Lemma preserves_le_negate1 `{!OrderPreserving f} x : x ≤ -1 → f x ≤ -1.
+  Proof. intros. rewrite <-(preserves_1 (f:=f)), <-preserves_negate. now apply (order_preserving f). Qed.
+End another_ring_order.
+
+Section another_strict_ring_order.
+  Context `{Ring R1} `{!StrictSemiRingOrder R1lt} `{Ring R2} `{R2lt : Lt R2}.
+
+  Lemma projected_strict_ring_order (f : R2 → R1) `{!SemiRing_Morphism f} :
+    (∀ x y, x < y ↔ f x < f y) → StrictSemiRingOrder R2lt.
+  Proof.
+    intros P. pose proof (projected_strict_setoid_order f P).
+    apply from_strict_ring_order.
+     repeat (split; try apply _). intros x y E.
+     apply P. rewrite 2!preserves_plus.
+     now apply (strictly_order_preserving _), P.
+    intros x y E1 E2.
+    apply P. rewrite preserves_mult, preserves_0.
+    now apply pos_mult_compat; rewrite <-(preserves_0 (f:=f)); apply P.
+  Qed.
+End another_strict_ring_order.
+
+Section another_pseudo_ring_order.
+  Context `{Ring R1} `{Apart R1} `{!PseudoSemiRingOrder R1lt}
+    `{Ring R2} `{Apart R2} `{R2lt : Lt R2}.
+
+  Lemma projected_pseudo_ring_order (f : R2 → R1) `{!SemiRing_Morphism f} `{!StrongInjective f} :
+    (∀ x y, x < y ↔ f x < f y) → PseudoSemiRingOrder R2lt.
+  Proof.
+    intros P. pose proof (projected_pseudo_order f P).
+    pose proof (projected_strict_ring_order f P).
+    apply from_pseudo_ring_order; try apply _.
+    pose proof (pseudo_order_setoid : StrongSetoid R1).
+    pose proof (pseudo_order_setoid : StrongSetoid R2).
+    pose proof (strong_injective_mor f).
+    repeat (split; try apply _).
+    intros x₁ y₁ x₂ y₂ E.
+    apply (strong_injective f) in E. rewrite 2!preserves_mult in E.
+    destruct (strong_binary_extensionality (.*.) _ _ _ _ E); [left | right]; now apply (strong_extensionality f).
+  Qed.
+End another_pseudo_ring_order.
+
+Section another_full_pseudo_ring_order.
+  Context `{Ring R1} `{Apart R1} `{!FullPseudoSemiRingOrder R1le R1lt}
+    `{Ring R2} `{Apart R2} `{R2le : Le R2} `{R2lt : Lt R2}.
+
+  Lemma projected_full_pseudo_ring_order (f : R2 → R1) `{!SemiRing_Morphism f} `{!StrongInjective f} :
+    (∀ x y, x ≤ y ↔ f x ≤ f y) → (∀ x y, x < y ↔ f x < f y) → FullPseudoSemiRingOrder R2le R2lt.
+  Proof.
+    intros P1 P2. pose proof (projected_full_pseudo_order f P1 P2).
+    pose proof (projected_pseudo_ring_order f P2).
+    split; try apply _. apply le_iff_not_lt_flip.
+  Qed.
+End another_full_pseudo_ring_order.

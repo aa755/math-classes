@@ -1,15 +1,14 @@
-Require Import Coq.Setoids.Setoid Morphisms Program Omega.
+Require Import Omega.
 Require Import abstract_algebra ua_packed.
-Require universal_algebra varieties.monoid.
+Require universal_algebra varieties.monoids.
 
-Notation msig := varieties.monoid.sig.
+Notation msig := varieties.monoids.sig.
 Notation Op := (universal_algebra.Op msig False).
 Notation App := (universal_algebra.App msig False _ _).
 
 Import universal_algebra.
 
 Section contents.
-
   (* Ideally, we would like to operate exclusively on the universal term representation(s).
    If Coq had decent support for dependent pattern matching, this would be no problem.
    Unfortunately, Coq does not, and so we resort to defining an ad-hoc data type for
@@ -26,16 +25,17 @@ Section contents.
   Fixpoint to_ua (e: Term): Applied :=
     match e with
     | Var v => ua_packed.AppliedVar msig v tt
-    | Unit => ua_packed.AppliedOp msig monoid.one (ua_packed.NoMoreArguments msig tt)
-    | Comp x y => ua_packed.AppliedOp msig monoid.mult
+    | Unit => ua_packed.AppliedOp msig monoids.one (ua_packed.NoMoreArguments msig tt)
+    | Comp x y => ua_packed.AppliedOp msig monoids.mult
        (MoreArguments msig tt _ (to_ua x) (MoreArguments msig tt _ (to_ua y) (NoMoreArguments msig tt)))
     end.
 
   Definition from_ua (t: Applied): { r: Term | to_ua r ≡ t }.
   Proof with reflexivity.
-   change ((fun s => match s return ua_packed.Applied msig s → Type with
-     tt => fun t => { r | to_ua r ≡ t } end) tt t).
-   apply better_Applied_rect.
+    refine (better_Applied_rect msig (λ s,
+       match s return (ua_packed.Applied msig s → Type) with
+       | tt => λ t, {r : Term | to_ua r ≡ t}
+       end) _ _ t).
     simpl.
     intros []; simpl.
      intros.
@@ -73,12 +73,12 @@ Section contents.
     | Comp (Comp x y) z => internal_simplify (Comp x (Comp y z))
     end.
 
-  Solve Obligations using (program_simpl; simpl; try reflexivity; omega).
+  Solve Obligations using (program_simpl; simpl; try apply reflexivity; omega).
 
   Next Obligation.
    destruct internal_simplify.
    simpl.
-   rewrite e0.
+   rewrite e.
    transitivity (mon_unit & universal_algebra.eval msig (λ _, v) (curry (to_ua y))).
     symmetry.
     apply left_identity.
@@ -88,24 +88,24 @@ Section contents.
   Next Obligation.
    destruct internal_simplify.
    simpl.
-   rewrite e0.
+   rewrite e.
    transitivity (universal_algebra.eval msig (λ _, v) (curry (to_ua x)) & mon_unit).
     symmetry.
     apply right_identity.
    reflexivity.
   Qed.
 
-  Next Obligation. destruct internal_simplify. simpl. rewrite e0. reflexivity. Qed.
-  Next Obligation. destruct internal_simplify. simpl. rewrite e0. simpl. apply associativity. Qed.
+  Next Obligation. destruct internal_simplify. simpl. rewrite e. reflexivity. Qed.
+  Next Obligation. destruct internal_simplify. simpl. rewrite e. simpl. apply associativity. Qed.
 
   Program Definition simplify (t: uaTerm): { r: uaTerm | ∀ v, eval v r = eval v t } :=
     curry (to_ua (internal_simplify (from_ua (decode0 t)))).
 
   Next Obligation.
    destruct @internal_simplify. simpl.
-   destruct @from_ua in e0. simpl in *.
+   destruct @from_ua in e. simpl in *.
+   rewrite e.
    rewrite e0.
-   rewrite e1.
    rewrite @curry_decode0.
    reflexivity.
   Qed.
@@ -116,7 +116,7 @@ Section contents.
 
   Instance: Equiv V := eq.
 
-  Goal ∀ (x y: uaTerm), open_terms.ee msig msig monoid.Laws (ne_list.one tt) x y →
+  Goal ∀ (x y: uaTerm), open_terms.ee msig msig monoids.Laws (ne_list.one tt) x y →
    ` (simplify x) ≡ ` (simplify y).
   Proof.
 

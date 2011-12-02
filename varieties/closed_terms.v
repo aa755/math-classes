@@ -2,9 +2,9 @@ Require Import
   RelationClasses Relation_Definitions List Morphisms
   universal_algebra ua_homomorphisms
   abstract_algebra canonical_names
-  theory.categories categories.variety.
+  theory.categories categories.varieties.
 
-Section contents. 
+Section contents.
   Variable et: EquationalTheory.
 
   (* The initial object will consists of arity-0 terms with a congruence incorporating the variety's laws.
@@ -40,13 +40,12 @@ Section contents.
   Existing Instance e_sym.
   Existing Instance e_trans.
 
-  Instance: ∀ o, Equivalence (e o) := {}.
-
   (* .. and then take the specialization at arity 0 for Term0: *)
 
   Instance: ∀ a, Equiv (ClosedTerm0 a) := λ a, e (ne_list.one a).
 
   Instance: ∀ a, Setoid (ClosedTerm0 a) := {}.
+  Proof. split; apply _. Qed.
 
   (* While this fancy congruence is the one we'll use to make our initial object a setoid,
    in our proofs we will also need to talk about extensionally equal closed term
@@ -92,14 +91,14 @@ Section contents.
 
   (* And hence, an object in the category: *)
 
-  Definition the_object: variety.Object et := variety.object et ClosedTerm0.
+  Definition the_object: varieties.Object et := varieties.object et ClosedTerm0.
 
   (* Interestingly, this object is initial, which we prove in the remainder of this file. *)
 
   (* To show its initiality, we begin by constructing arrows to arbitrary other objects: *)
 
-  Section for_another_object. 
-    Variable other: variety.Object et.
+  Section for_another_object.
+    Variable other: varieties.Object et.
 
     (* Computationally, the arrow simply evaluates closed terms in the other
      model. For induction purposes, we first define this for arbitrary op_types: *)
@@ -168,13 +167,13 @@ Section contents.
 
     (* Furthermore, we can show preservation of operations, giving us a homomorphism (and an arrow): *)
 
-    Instance: @HomoMorphism et ClosedTerm0 other _ (variety.variety_equiv et other) _ _ (λ _, eval_in_other).
+    Instance: @HomoMorphism et ClosedTerm0 other _ (varieties.variety_equiv et other) _ _ (λ _, eval_in_other).
     Proof with intuition.
      constructor; try apply _.
      intro.
-     change (Preservation et ClosedTerm0 other (λ _, eval_in_other) (app_tree (Op _ _ o)) (variety.variety_op _ other o)).
-     generalize (algebra_propers o  : eval_in_other (Op _ _ o) = variety.variety_op _ other o).
-     generalize (Op _ False o) (variety.variety_op et other o).
+     change (Preservation et ClosedTerm0 other (λ _, eval_in_other) (app_tree (Op _ _ o)) (varieties.variety_ops _ other o)).
+     generalize (algebra_propers o  : eval_in_other (Op _ _ o) = varieties.variety_ops _ other o).
+     generalize (Op _ False o) (varieties.variety_ops et other o).
      induction (et o)...
      simpl. intro. apply IHo0, H.
      apply reflexivity. (* todo: shouldn't have to say [apply] here. file bug *)
@@ -214,5 +213,8 @@ Section contents.
 
   (* Todo: Show decidability of equality (likely quite tricky). Without that, we cannot use any of this to
    get a canonical model of the naturals/integers, because such models must be decidable. *)
+  (* (Tom): This is possible in the general case, since that would involve solving the word problem for
+     groups. In particular, a group presentation determines a variety, the initial object of which is the
+     group so presented. *)
 
 End contents.

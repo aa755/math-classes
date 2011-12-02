@@ -1,67 +1,150 @@
+Require
+  theory.shiftl theory.int_pow.
 Require Import
-  QArith BigQ Morphisms Program Field workaround_tactics
-  abstract_algebra interfaces.integers 
-  fast_integers field_of_fractions stdlib_rationals.
-Require Export 
+  QArith BigQ
+  abstract_algebra
+  interfaces.integers interfaces.rationals interfaces.additional_operations
+  fast_naturals fast_integers field_of_fractions stdlib_rationals.
+Require Export
   QType_rationals.
 
 Module Import BigQ_Rationals := QType_Rationals BigQ.
 
-Definition fastQ: Type := BigQ.t.
+(* Embedding of [bigZ] into [bigQ] *)
+Instance inject_bigZ_bigQ: Cast bigZ bigQ := BigQ.Qz.
+Instance inject_bigN_bigQ: Cast bigN bigQ := cast bigZ bigQ ∘ cast bigN bigZ.
+Instance inject_Z_bigQ: Cast Z bigQ := cast bigZ bigQ ∘ cast Z bigZ.
 
-(* Embedding of [fastZ] into [fastQ] *)
-Definition fastZ_to_fastQ := BigQ.Qz.
-
-Instance: Proper ((=) ==> (=)) fastZ_to_fastQ.
-Proof.
-  intros x y E. unfold_equiv. unfold Qeq. simpl.
-  now rewrite E.
-Qed.
-
-Instance: SemiRing_Morphism fastZ_to_fastQ.
+Instance: Proper ((=) ==> (=)) inject_bigZ_bigQ.
+Proof. intros x y E. unfold_equiv. unfold Qeq. simpl. now rewrite E. Qed.
+Instance: SemiRing_Morphism inject_bigZ_bigQ.
 Proof. repeat (split; try apply _). Qed.
 
-(* Embedding of [fastQ] into [Frac fastZ] *)
-Definition fastQ_to_frac_fastZ (x : fastQ) : Frac fastZ :=
+Instance: SemiRing_Morphism inject_bigN_bigQ.
+Proof. unfold inject_bigN_bigQ. apply _. Qed.
+Instance: SemiRing_Morphism inject_Z_bigQ.
+Proof. unfold inject_Z_bigQ. apply _. Qed.
+
+Instance: Proper ((=) ==> (=) ==> (=)) BigQ.Qq.
+Proof.
+  intros x1 y1 E1 x2 y2 E2.
+  do 4 red. simpl.
+  case_eq (BigN.eqb x2 BigN.zero); intros Ex2; case_eq (BigN.eqb y2 BigN.zero); intros Ey2.
+     reflexivity.
+    rewrite E2 in Ex2. edestruct eq_true_false_abs; eassumption.
+   rewrite E2 in Ex2. edestruct eq_true_false_abs; eassumption.
+  simpl. do 3 red in E1. do 3 red in E2. now rewrite E1, E2.
+Qed.
+
+(* Why is the below not in the stdlib? *)
+Lemma bigQ_div_bigQq (n : bigZ) (d : bigN) :
+  BigQ.Qq n d = 'n / 'd.
+Proof.
+  change (n # d == 'n / (BigQ.Qz (BigZ.Pos d)))%bigQ.
+  unfold BigQ.div, BigQ.inv.
+  case_eq (BigZ.zero ?= BigZ.Pos d)%bigZ; intros Ed.
+    transitivity BigQ.zero; [| ring].
+    do 2 red. simpl.
+    case_eq (BigN.eqb d BigN.zero); intros Ed2; [reflexivity |].
+    rewrite BigZ.spec_compare in Ed.
+    destruct (proj2 (not_true_iff_false _) Ed2).
+    apply BigN.eqb_eq. symmetry. now apply Zcompare_Eq_eq.
+   unfold BigQ.mul. simpl. rewrite right_identity. reflexivity.
+  destruct (BigZ.compare_spec BigZ.zero (BigZ.Pos d)); try discriminate.
+  destruct (orders.lt_not_le_flip 0 ('d : bigZ)); trivial.
+  now apply nat_int.to_semiring_nonneg.
+Qed.
+
+Lemma bigQ_div_bigQq_alt (n : bigZ) (d : bigN) :
+  BigQ.Qq n d = 'n / 'cast bigN bigZ d.
+Proof. apply bigQ_div_bigQq. Qed.
+
+(* Embedding of [bigQ] into [Frac bigZ] *)
+Instance inject_bigQ_frac_bigZ: Cast bigQ (Frac bigZ) := λ x,
   match x with
   | BigQ.Qz n => 'n
   | BigQ.Qq n d =>
-     match decide_rel (=) (BigN_BigZ.Z_of_N d) 0 with
+     match decide_rel (=) ('d : bigZ) 0 with
      | left _ => 0
-     | right E => frac n (BigN_BigZ.Z_of_N d) E
+     | right E => frac n ('d) E
      end
   end.
 
-Lemma fastQ_to_frac_fastZ_correct :
-  fastQ_to_frac_fastZ = Frac_lift BigZ.of_Z ∘ Q_to_fracZ ∘ BigQ.to_Q.
+Lemma inject_bigQ_frac_bigZ_correct:
+ cast bigQ (Frac bigZ) = rationals_to_frac bigQ bigZ.
 Proof.
   intros x y E. rewrite <-E. clear y E.
-  destruct x as [n | n d]. 
-   unfold equiv, Frac_equiv. simpl.
-   now posed_rewrite (jections.surjective_applied' BigZ.of_Z n).
-  unfold equiv, Frac_equiv. simpl.
-  case (decide_rel equiv (BigN_BigZ.Z_of_N d) 0); 
-       case_eq (BigN.eq_bool d BigN.zero); simpl; intros E1 E2.
-     reflexivity.
-    contradict E1. now apply not_false_iff_true, BigN.eqb_eq.
-   destruct E2. now apply BigN.eqb_eq in E1. 
-  posed_rewrite (jections.surjective_applied' BigZ.of_Z n).
-  unfold equiv, BigZ_Integers.ZType_equiv, BigZ.eq.
-  rewrite 2!rings.preserves_mult.
-  f_equal; try reflexivity. simpl.
-  rewrite BigN.spec_of_pos.
-  apply Z2P_correct.
-  apply stdlib_binary_integers.Zlt_coincides. split.
-   apply BigN.spec_pos.
-  now apply not_symmetry.
+  destruct x as [n|n d].
+   rapply (integers.to_ring_unique_alt
+     (cast bigZ (Frac bigZ)) (rationals_to_frac bigQ bigZ ∘ cast bigZ bigQ)).
+  unfold cast at 1. simpl.
+  rewrite bigQ_div_bigQq_alt.
+  rewrite rings.preserves_mult, dec_fields.preserves_dec_recip.
+  case (decide_rel (=) ('d : bigZ) 0); intros Ed.
+   rewrite Ed. rewrite !rings.preserves_0. rewrite dec_recip_0.
+   now rewrite rings.mult_0_r.
+  rewrite 2!(integers.to_ring_twice _ _ (cast bigZ (Frac bigZ))).
+  now rewrite Frac_dec_mult_num_den at 1.
 Qed.
 
-Instance: Injective fastQ_to_frac_fastZ.
-Proof. rewrite fastQ_to_frac_fastZ_correct. apply _. Qed.
+Instance: Injective inject_bigQ_frac_bigZ.
+Proof. rewrite inject_bigQ_frac_bigZ_correct. apply _. Qed.
 
-Instance: SemiRing_Morphism fastQ_to_frac_fastZ.
-Proof. 
+Instance: SemiRing_Morphism inject_bigQ_frac_bigZ.
+Proof.
   eapply rings.semiring_morphism_proper.
-   apply fastQ_to_frac_fastZ_correct. 
-  apply _. 
+   apply inject_bigQ_frac_bigZ_correct.
+  apply _.
+Qed.
+
+(* Efficient shiftl on [bigQ] *)
+Instance bigQ_shiftl: ShiftL bigQ bigZ := λ x k,
+  match k with
+  | BigZ.Pos k =>
+    match x with
+    | BigQ.Qz n => '(n ≪ k)
+    | BigQ.Qq n d => BigQ.Qq (n ≪ k) d
+    end
+  | BigZ.Neg k =>
+    match x with
+    | BigQ.Qz n => BigQ.Qq n (1 ≪ k)
+    | BigQ.Qq n d => BigQ.Qq n (d ≪ k)
+    end
+  end.
+
+Instance: ShiftLSpec bigQ bigZ _.
+Proof.
+  apply shiftl_spec_from_int_pow.
+  unfold shiftl, bigQ_shiftl.
+  intros [n|n d] [k|k].
+     rewrite shiftl.preserves_shiftl.
+     now rewrite <-shiftl.shiftl_int_pow, shiftl.preserves_shiftl_exp.
+    change (BigZ.Neg k) with (-'k : bigZ).
+    rewrite int_pow.int_pow_negate.
+    rewrite bigQ_div_bigQq, shiftl.preserves_shiftl.
+    rewrite <-(shiftl.preserves_shiftl_exp (f:=cast bigN bigZ)).
+    now rewrite rings.preserves_1, shiftl.shiftl_base_1_int_pow.
+   rewrite 2!bigQ_div_bigQq.
+   rewrite shiftl.preserves_shiftl.
+   rewrite <-(shiftl.preserves_shiftl_exp (f:=cast bigN bigZ)).
+   rewrite shiftl.shiftl_int_pow.
+   now rewrite <-2!associativity, (commutativity (/cast bigN bigQ d)).
+  change (BigZ.Neg k) with (-'k : bigZ).
+  rewrite int_pow.int_pow_negate.
+  rewrite 2!bigQ_div_bigQq.
+  rewrite shiftl.preserves_shiftl.
+  rewrite <-(shiftl.preserves_shiftl_exp (f:=cast bigN bigZ)).
+  rewrite shiftl.shiftl_int_pow.
+  now rewrite dec_fields.dec_recip_distr, associativity.
+Qed.
+
+Instance bigQ_Zshiftl: ShiftL bigQ Z := λ x k, x ≪ 'k.
+
+Instance: ShiftLSpec bigQ Z _.
+Proof.
+  split; unfold shiftl, bigQ_Zshiftl.
+    solve_proper.
+   intro. now apply shiftl_0.
+  intros x n.
+  rewrite rings.preserves_plus. now apply shiftl_S.
 Qed.

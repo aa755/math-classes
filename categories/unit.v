@@ -1,6 +1,6 @@
 Require Import
-  Morphisms RelationClasses Equivalence Coq.Setoids.Setoid
-  categories abstract_algebra functors.
+  RelationClasses Equivalence
+  categories.categories abstract_algebra categories.functors.
 
 Instance: Arrows unit := λ _ _, unit.
 Instance: CatId unit := λ _, tt.
@@ -10,6 +10,6 @@ Instance: ∀ x y : unit, Setoid (x ⟶ y) := {}.
 
 Instance: Category unit.
 Proof.
- constructor; try constructor; compute; repeat intro; 
+ constructor; try constructor; compute; repeat intro;
    repeat match goal with [ x : unit |- _ ] => destruct x end; reflexivity.
 Qed.
