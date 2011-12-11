@@ -14,7 +14,6 @@
 ./categories/unit.v
 ./categories/varieties.v
 ./categories/variety.v
-./functors/constant.v
 ./implementations/NType_naturals.v
 ./implementations/QType_rationals.v
 ./implementations/ZType_integers.v

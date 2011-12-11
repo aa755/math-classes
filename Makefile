@@ -220,7 +220,6 @@ VFILES:=varieties/setoids.v\
   implementations/ZType_integers.v\
   implementations/QType_rationals.v\
   implementations/NType_naturals.v\
-  functors/constant.v\
   categories/variety.v\
   categories/varieties.v\
   categories/unit.v\
