@@ -60,10 +60,8 @@ Section contents.
 
     Let ith_functor i := categories.Functor_inst _ _ (X i).
       (* todo: really necessary? *)
-
-    Program Definition factor: C ⟶ product_object
-      := categories.arrow (λ (c: C) i, X i c) (λ (x y: C) (c: x ⟶ y) i, fmap (X i) c) _.
-    Next Obligation. Proof with try reflexivity; intuition. (* functorial *)
+    Program Definition factor_functor : Functor (λ (c: C) i, X i c) (λ (x y: C) (c: x ⟶ y) i, fmap (X i) c).
+    Proof with try reflexivity; intuition. (* functorial *)
      constructor; intros; try apply _.
        constructor; try apply _.
        intros ? ? E ?.
@@ -72,7 +70,10 @@ Section contents.
       intro. unfold fmap at 1. rewrite preserves_id... destruct X...
      intro. unfold fmap at 1. rewrite preserves_comp... destruct X...
     Qed. (* todo: those [destruct X]'s shouldn't be necessary *)
-(*
+    
+    Program Definition factor: C ⟶ product_object
+      := categories.arrow (λ (c: C) i, X i c) (λ (x y: C) (c: x ⟶ y) i, fmap (X i) c) factor_functor.
+    (*
     Lemma s: is_sole (λ h', ∀ i, X i = project i ◎ h') factor.
     Proof with try reflexivity; intuition.
      split.

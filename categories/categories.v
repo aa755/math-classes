@@ -42,7 +42,7 @@ Section contents.
     Context (x y: Object).
 
     Global Program Instance e: Equiv (x ⟶ y) := λ a b,
-      exists X: ∀ _, isoT _ _, ∀ (p q: x) (r: p ⟶ q),
+      exists X: ∀ v, isoT _ _, ∀ (p q: x) (r: p ⟶ q),
        fmap a r ◎ snd (X p) = snd (X q) ◎ fmap b r.
 
     Let e_refl: Reflexive e.
@@ -114,10 +114,15 @@ Section contents.
   Global Program Instance: CatComp Object := λ _ _ _ x y, arrow (x ∘ y) _ _.
 
   Program Let proper_arrows (x y z: Object) (x0 y0: y ⟶ z) (x1 y1: x ⟶ y)
-    (f: ∀ v, @isoT _ _ _ _ _ (map_obj x0 v) (map_obj y0 v))
-    (g: ∀ v, @isoT _ _ _ _ _ (map_obj x1 v) (map_obj y1 v)) (v: x):
-      @isoT _ _ _ _ _ (map_obj x0 (map_obj x1 v)) (map_obj y0 (map_obj y1 v))
-   := (fst (f (y1 v)) ◎ fmap x0 (fst (g v)), fmap x0 (snd (g v)) ◎ snd (f (y1 v))).
+    (f: ∀ v, isoT (map_obj x0 v) (map_obj y0 v))
+    (g: ∀ v, isoT (map_obj x1 v) (map_obj y1 v)) (v: x):
+      isoT (map_obj x0 (map_obj x1 v)) (map_obj y0 (map_obj y1 v))
+   :=
+   let a := fmap x0 (fst (g v)) : (x0 (x1 v) ⟶ x0 (y1 v)) in
+   let b := fst `(f (y1 v))    in
+   let c := fmap x0 (snd (g v)) in
+   let d := snd (f (y1 v))    in
+     (b ◎ a, c ◎ d).
      (* Todo: Investigate why things go wrong without the underscores. *)
 
   Next Obligation. Proof with try apply _; intuition.

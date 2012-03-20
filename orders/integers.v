@@ -20,14 +20,12 @@ Proof.
   intros P0 Psuc1 Psuc2 n.
   destruct (int_abs_sig Z nat n) as [[a A]|[a A]].
    rewrite <-A. clear A. revert a. rapply naturals.induction.
-     solve_proper.
     now rewrite rings.preserves_0.
    intros m E.
    rewrite rings.preserves_plus, rings.preserves_1.
    apply Psuc1. apply to_semiring_nonneg. easy.
   rewrite <-(groups.negate_involutive n), <-A.
   clear A. revert a. rapply naturals.induction.
-    solve_proper.
    now rewrite rings.preserves_0, rings.negate_0.
   intros m E.
   rewrite rings.preserves_plus, rings.preserves_1.

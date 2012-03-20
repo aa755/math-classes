@@ -70,7 +70,8 @@ Class FSetContainsSpec A `{At : SetType A} `{Ae : Equiv A} `{Ate : SetEquiv A}
 Unfortunately, properties as meet and the differences cannot be uniquely
 defined in an algebraic way, therefore we just use set inclusion.
 *)
-Class FullFSet A {car Ae conAe conAle Acontains Aempty Ajoin Asingle U Adec} `{Adiff : SetDifference A} `{Ameet : SetMeet A} :=
+Class FullFSet A {car Ae conAe conAle Acontains Aempty Ajoin Asingle U Adec} 
+               `{Adiff : SetDifference A} `{Ameet : SetMeet A} :=
   { full_fset_fset :> @FSet A car Ae conAe Aempty Ajoin Asingle U Adec
   ; full_fset_contains :> @FSetContainsSpec A car Ae conAe conAle Acontains Ajoin Asingle
   ; fset_in_meet : ∀ X Y x, x ∈ X ⊓ Y ↔ (x ∈ X ∧ x ∈ Y)

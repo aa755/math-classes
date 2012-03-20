@@ -35,9 +35,9 @@ Section contents.
      apply (@epA nat (ne_list.cons y t1) (λ a i, ba (v a i))
          (λ a i, ba (v a i)) (reflexivity _) t2 t2 (reflexivity _)
          : Proper ((=) ==> op_type_equiv (sorts et) A t1)%signature o).
-     now apply (IHt2 v).
+     now apply IHt2.
     subst o.
-    rewrite (IHt1 v (ba (eval et v t3)) (ba (eval et v t3)))...
+    rewrite (IHt1 (ba (eval et v t3)) (ba (eval et v t3)))...
     apply (@map_op_proper (sorts et) B A _ _ _ _ _ _).
     unfold compose in *.
     rapply (epB _ _ v v (reflexivity _) t2 t2 (reflexivity _)).
@@ -60,9 +60,8 @@ Section contents.
   Program Lemma transfer_eval' n (t: Term et nat n) (v: Vars et B nat):
     map_op _ (@ab) (@ba) (eval et (A:=A) (λ _ i, ba (v _ i)) t) = eval et v t.
   Proof with auto.
-   intros.
    pose proof (@map_op_proper (sorts et) A B _ _ _ _ _ _).
-   rewrite (transfer_eval t v).
+   rewrite (transfer_eval ).
    apply (@map_iso _ A B _ _ (@ab) (@ba) ab_ba).
    apply _.
   Qed.

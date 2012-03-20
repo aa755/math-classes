@@ -28,7 +28,7 @@ Section contents.
   Program Definition arrow `{InVariety et A} `{InVariety et B}
     f `{!HomoMorphism et A B f}: object et A ⟶ object et B := f.
 
-  Global Program Instance: CatId (Object et) := λ _ _, id.
+  Global Program Instance: CatId (Object et) := λ o s, id.
 
   Global Program Instance: CatComp (Object et) := λ _ _ _ f g v, f v ∘ g v.
   Next Obligation. destruct f, g. apply _. Qed.

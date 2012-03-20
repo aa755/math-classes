@@ -15,13 +15,13 @@ Add Ring R : (rings.stdlib_semiring_theory R).
 Global Instance Pos_inject: Cast (R₊) R := @proj1_sig R _.
 
 (* Operations *)
-Global Program Instance Pos_plus: Plus (R₊) := λ x y, (`x + `y)↾_.
+Global Program Instance Pos_plus: Plus (R₊) := λ x y, (`x + y).
 Next Obligation.
   destruct x as [x Hx], y as [y Hy].
   now apply pos_plus_compat.
 Qed.
 
-Global Program Instance Pos_mult: Mult (R₊) := λ x y, (`x * `y)↾_.
+Global Program Instance Pos_mult: Mult (R₊) := λ x y, (`x * `y).
 Next Obligation with auto.
   destruct x as [x Hx], y as [y Hy].
   now apply pos_mult_compat.
@@ -54,7 +54,7 @@ Proof. now repeat (split; try apply _). Qed.
 Section shiftl.
   Context `{SemiRing B} `{!Biinduction B} `{!ShiftLSpec R B sl}.
 
-  Global Program Instance Pos_shiftl: ShiftL (R₊) B | 5 := λ x n, (x ≪ n : R).
+  Global Program Instance Pos_shiftl: ShiftL (R₊) B | 5 := λ x n, (`x ≪ n).
   Next Obligation. destruct x. now apply shiftl_pos. Qed.
 End shiftl.
 End positive_semiring_elements.
@@ -63,6 +63,7 @@ Section int_pow.
   Context `{DecField R} `{Apart R} `{!FullPseudoSemiRingOrder Rle Rlt}
     `{!TrivialApart R} `{∀ x y : R, Decision (x = y)} `{Integers B} `{!IntPowSpec R B ipw}.
 
-  Global Program Instance Pos_int_pow: Pow (R₊) B | 5 := λ x n, (x ^ n : R).
+  Global Program Instance Pos_int_pow: Pow (R₊) B | 5 := λ x n, (`x ^ n).
+                                                                
   Next Obligation. destruct x. now apply int_pow_pos. Qed.
 End int_pow.
