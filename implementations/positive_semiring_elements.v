@@ -7,7 +7,7 @@ Require Import
 Local Existing Instance pseudo_srorder_semiring.
 
 Section positive_semiring_elements.
-Context `{FullPseudoSemiRingOrder R} `{Apart R} `{!PropHolds (1 ≶ 0)}.
+Context `{FullPseudoSemiRingOrder R} `{!PropHolds (1 ≶ 0)}.
 
 Add Ring R : (rings.stdlib_semiring_theory R).
 
