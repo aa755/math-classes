@@ -1,5 +1,6 @@
 Global Generalizable All Variables.
 Global Set Automatic Introduction.
+Global Set Asymmetric Patterns.
 
 Require Export
   Morphisms Setoid Program Unicode.Utf8 Utf8_core.
