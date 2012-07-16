@@ -6,7 +6,6 @@
 ./categories/categories.v
 ./categories/dual.v
 ./categories/empty.v
-./categories/functor.v
 ./categories/functors.v
 ./categories/product.v
 ./categories/setoid.v
