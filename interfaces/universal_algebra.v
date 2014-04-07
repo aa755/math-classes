@@ -16,13 +16,13 @@ Section for_signature.
     | App t y: Term V (ne_list.cons y t) → Term V (ne_list.one y) → Term V t
     | Op o: Term V (σ o).
 
-  Implicit Arguments Var [[V]].
+  Arguments Var {V} _ _.
 
   Fixpoint map_var `(f: V → W) `(t: Term V o): Term W o :=
     match t in Term _ o return Term W o with
     | Var v s => Var (f v) s
-    | App _ _ x y => App _ _ _ (map_var f x) (map_var f y)
-    | Op s => Op _ s
+    | App _ _ _ x y => App _ _ _ (map_var f x) (map_var f y)
+    | Op _ s => Op _ s
     end.
 
   (* Term has OpType as an index, which means we can have terms with function
@@ -34,7 +34,7 @@ Section for_signature.
   Section applications_ind.
     Context V (P: ∀ {a}, Term0 V a → Type).
 
-    Implicit Arguments P [[a]].
+    Arguments P {a} _.
 
     (* Proving such properties for nullary terms directly using Term's induction principle is
     problematic because it requires a property over terms of /any/ arity. Hence, we must first
@@ -137,8 +137,8 @@ Section for_signature.
   Fixpoint close {V} {o} (v: Vars (λ x, Term False (ne_list.one x)) V) (t: Term V o): Term False o :=
     match t in Term _ o return Term False o with
     | Var x y => v y x
-    | App x y z r => App _ x y (close v z) (close v r)
-    | Op o => Op _ o
+    | App _ x y z r => App _ x y (close v z) (close v r)
+    | Op _ o => Op _ o
     end.
 
   Section eval.
@@ -147,8 +147,8 @@ Section for_signature.
     Fixpoint eval {V} {n: OpType} (vars: Vars A V) (t: Term V n) {struct t}: op_type A n :=
       match t with
       | Var v a => vars a v
-      | Op o => algebra_op o
-      | App n a f p => eval vars f (eval vars p)
+      | Op _ o => algebra_op o
+      | App _ n a f p => eval vars f (eval vars p)
       end.
 
     Global Instance eval_proper {V} (n: OpType):
@@ -236,7 +236,7 @@ Section for_signature.
      transitivity (eval v' (fst i)).
       apply eval_proper...
      rewrite E.
-     apply eval_proper... symmetry...
+     apply eval_proper...
     Qed.
 
     Definition boring_eval_entailment (vars: Vars A nat) (ee: EqEntailment):

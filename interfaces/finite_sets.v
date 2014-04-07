@@ -17,7 +17,7 @@ type class:
 *)
 
 Class SetType (A : Type) := set_type: Type.
-Implicit Arguments set_type [[SetType]].
+Arguments set_type _ {SetType}.
 (* We can't make this type transparent to typeclass resolution. *)
 
 (*
@@ -27,7 +27,7 @@ on any specific properties it likes.
 For convenience we define some notations to hide nasty details.
 *)
 Notation EmptySet A := (Bottom (set_type A)).
-Notation "∅" := (@bottom (set_type _) _).
+Notation "∅" := (@bottom (set_type _) _) : mc_scope.
 Notation SetEquiv A := (Equiv (set_type A)).
 Notation SetJoin A := (Join (set_type A)).
 Notation SetMeet A := (Meet (set_type A)).
@@ -70,8 +70,7 @@ Class FSetContainsSpec A `{At : SetType A} `{Ae : Equiv A} `{Ate : SetEquiv A}
 Unfortunately, properties as meet and the differences cannot be uniquely
 defined in an algebraic way, therefore we just use set inclusion.
 *)
-Class FullFSet A {car Ae conAe conAle Acontains Aempty Ajoin Asingle U Adec} 
-               `{Adiff : SetDifference A} `{Ameet : SetMeet A} :=
+Class FullFSet A {car Ae conAe conAle Acontains Aempty Ajoin Asingle U Adec} `{Adiff : SetDifference A} `{Ameet : SetMeet A} :=
   { full_fset_fset :> @FSet A car Ae conAe Aempty Ajoin Asingle U Adec
   ; full_fset_contains :> @FSetContainsSpec A car Ae conAe conAle Acontains Ajoin Asingle
   ; fset_in_meet : ∀ X Y x, x ∈ X ⊓ Y ↔ (x ∈ X ∧ x ∈ Y)

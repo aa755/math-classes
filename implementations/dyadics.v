@@ -12,11 +12,11 @@ Require Import
   theory.rationals theory.shiftl theory.int_pow theory.nat_pow theory.abs.
 
 Record Dyadic Z := dyadic { mant: Z; expo: Z }.
-Implicit Arguments dyadic [[Z]].
-Implicit Arguments mant [[Z]].
-Implicit Arguments expo [[Z]].
+Arguments dyadic {Z} _ _.
+Arguments mant {Z} _.
+Arguments expo {Z} _.
 
-Infix "▼" := dyadic (at level 80).
+Infix "▼" := dyadic (at level 80) : mc_scope.
 
 Section dyadics.
 Context `{Integers Z} `{Apart Z} `{!TrivialApart Z} `{!FullPseudoSemiRingOrder Zle Zlt}
@@ -66,7 +66,7 @@ Section with_rationals.
   Proof.
     rewrite shiftl_nat_pow.
     rewrite rings.preserves_mult, nat_pow.preserves_nat_pow, rings.preserves_2.
-    now rewrite <-(int_pow_nat_pow (plus one one)).
+    now rewrite <-(int_pow_nat_pow 2).
   Qed.
 
   Lemma DtoQ_slow_preserves_plus x y : DtoQ_slow' (x + y) = DtoQ_slow' x + DtoQ_slow' y.

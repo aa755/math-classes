@@ -20,7 +20,7 @@ Section ideal_congruence.
   Context `{ideal : RingIdeal A P}.
   Add Ring A2 : (rings.stdlib_ring_theory A).
 
-  (* If P is an ideal, we can easily derive some further closedness properties. *)
+  (* If P is an ideal, we can easily derive some further closedness properties: *)
   Hint Resolve (ideal_closed_plus_negate) (ideal_closed_mult_l) (ideal_closed_mult_r).
 
   Lemma ideal_closed_0 : P 0.

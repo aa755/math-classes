@@ -1,8 +1,7 @@
 Require Import
-  Relation_Definitions
   abstract_algebra theory.setoids interfaces.functors theory.jections.
 
-Notation "x ⇛ y" := (∀ a, x a ⟶ y a) (at level 90, right associativity).
+Notation "x ⇛ y" := (∀ a, x a ⟶ y a) (at level 90, right associativity) : mc_scope.
   (* Transformations (polymorphic arrows). Couldn't find an "arrow with dot over it" unicode character. *)
 
 (* Natural transformations: *)
@@ -244,7 +243,6 @@ Lemma freedom_as_adjunction
     ∀ b, proves_free forget b (eta b) (phi b).
 Proof. exact (alt_adjunction_η_universal _ _ _ _). Qed.
 *)
-
-Implicit Arguments Producer [].
-Implicit Arguments HasProducts [[Arrows0] [H] [CatComp0] [H1] [H2] [H3]]. (* todo: rename args *)
-Implicit Arguments product [[X] [Producer] [I]].
+Arguments Producer : clear implicits.
+Arguments HasProducts _ {Arrows Eq CatComp H1 H2 H3} : rename.
+Arguments product {X Producer I} _.

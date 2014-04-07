@@ -3,7 +3,7 @@ Require Import
   implementations.dyadics fast_integers.
 
 Section wolfram_sqrt.
-Context `{Integers Z} 
+Context `{Integers Z} `{!RingOrder oZ} `{!TotalOrder oZ}
   `{precedes_dec : ∀ (x y : Z), Decision (x ≤ y)}
   `{!NatPowSpec Z (Z⁺) pw}  `{!ShiftLSpec Z (Z⁺) sl}.
 
@@ -17,7 +17,7 @@ Fixpoint root_loop (x : Dyadic Z) (n : nat) : Dyadic Z * Dyadic Z :=
   end.
 End wolfram_sqrt.
 
-Definition fast_root_loop := root_loop (Z:=BigZ_Integers.t).
+Definition fast_root_loop := root_loop (Z:=fastZ).
 
 Let n : nat := Eval vm_compute in (10 * 10 * 10 * 10)%nat.
 

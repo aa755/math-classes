@@ -10,7 +10,7 @@ Record Object (sign: Signature) : Type := object
   ; algebra_ops: AlgebraOps sign algebra_carriers
   ; algebra_proof: Algebra sign algebra_carriers }.
 
-Implicit Arguments object [[algebra_equiv] [algebra_ops] [algebra_proof]].
+Arguments object _ _ {algebra_equiv algebra_ops algebra_proof}.
 
 (* Avoid Coq trying to apply algebra_equiv to find arbitrary Equiv instances *)
 Hint Extern 0 (Equiv (algebra_carriers _ _ _)) => eapply @algebra_equiv : typeclass_instances.
@@ -28,7 +28,6 @@ Section contents.
   Global Program Instance: CatId (Object sign) := λ _ _, id.
 
   Global Program Instance comp: CatComp (Object sign) := λ _ _ _ f g v, f v ∘ g v.
-  Next Obligation. destruct f, g. apply _. Qed.
 
   Global Program Instance: ∀ x y: Object sign, Equiv (x ⟶ y)
     := λ _ _ x y, ∀ b, pointwise_relation _ (=) (x b) (y b).

@@ -10,8 +10,8 @@ Section contents.
     `{!HomoMorphism et A B ab} `{!HomoMorphism et B A ba}
     (i: iso_arrows (varieties.arrow et ab) (varieties.arrow et ba)).
 
-  Implicit Arguments ab [[a]].
-  Implicit Arguments ba [[a]].
+  Arguments ab {a} _.
+  Arguments ba {a} _.
 
   Let ab_proper a: Proper ((=) ==> (=)) (@ab a).
   Proof. apply _. Qed.
@@ -60,8 +60,9 @@ Section contents.
   Program Lemma transfer_eval' n (t: Term et nat n) (v: Vars et B nat):
     map_op _ (@ab) (@ba) (eval et (A:=A) (λ _ i, ba (v _ i)) t) = eval et v t.
   Proof with auto.
+   intros.
    pose proof (@map_op_proper (sorts et) A B _ _ _ _ _ _).
-   rewrite (transfer_eval ).
+   rewrite transfer_eval.
    apply (@map_iso _ A B _ _ (@ab) (@ba) ab_ba).
    apply _.
   Qed.

@@ -79,12 +79,13 @@ Section subalgebras.
   Qed.
 
   (* Which is mono because proj is injective. *)
-
-  Instance: Injective ((λ i, proj i) i).
+  Instance: Injective (proj i).
   Proof.
-   constructor. firstorder.
-   change (@Setoid_Morphism ((λ i, @sig (A i) (P i)) i) (A i) ((λ i, @sig_equiv (A i) (e i) (P i)) i) (e i) (proj i)).
-   apply _.
+    split.
+     firstorder.
+    apply (@homo_proper sign carrier A
+      (fun s : sorts sign => @sig_equiv (A s) (e s) (P s)) _ _ _ _).
+    apply _.
   Qed.
 
   Global Instance: Mono (algebras.arrow _ proj) := {}.

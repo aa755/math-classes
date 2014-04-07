@@ -1,5 +1,5 @@
 Require Import
-  Relation_Definitions abstract_algebra interfaces.functors theory.categories.
+  abstract_algebra interfaces.functors theory.categories.
 
 Record Object := object
   { obj:> Type
@@ -9,7 +9,7 @@ Record Object := object
   ; CatComp_inst: CatComp obj
   ; Category_inst: Category obj }.
 
-Implicit Arguments object [[Arrows_inst] [Equiv_inst] [CatId_inst] [CatComp_inst] [Category_inst]].
+Arguments object _ {Arrows_inst Equiv_inst CatId_inst CatComp_inst Category_inst}.
 Existing Instance Arrows_inst.
 Hint Extern 0 (Equiv (_ ⟶ _)) => eapply @Equiv_inst : typeclass_instances.
 Existing Instance CatId_inst.
@@ -28,8 +28,8 @@ Record Arrow (x y: Object): Type := arrow
   ; Fmap_inst: Fmap map_obj
   ; Functor_inst: Functor map_obj _ }.
 
-Implicit Arguments arrow [[x][y]] [[x][y][Functor_inst]][[x][y][Fmap_inst][Functor_inst]].
-Implicit Arguments map_obj [[x][y]].
+Arguments arrow {x y} _ {Fmap_inst Functor_inst}.
+Arguments map_obj {x y} _ _.
 Existing Instance Fmap_inst.
 Existing Instance Functor_inst.
 
@@ -43,7 +43,7 @@ Section contents.
 
     Global Program Instance e: Equiv (x ⟶ y) := λ a b,
       exists X: ∀ v, isoT _ _, ∀ (p q: x) (r: p ⟶ q),
-                                 fmap a r ◎ snd (X p) = snd (X q) ◎ fmap b r.
+       fmap a r ◎ snd (X p) = snd (X q) ◎ fmap b r.
 
     Let e_refl: Reflexive e.
     Proof.
@@ -55,7 +55,6 @@ Section contents.
 
     Program Let sym_arrows (a b: x → y) (v: x) (p: isoT (a v) (b v)): isoT (b v) (a v)
         := (snd p, fst p).
-
     Next Obligation. destruct p. simpl in *. firstorder. Qed.
 
     Let e_sym: Symmetric e.
@@ -73,7 +72,6 @@ Section contents.
      (x1: sig (λ (p: (x0 v ⟶ y0 v) * _), uncurry iso_arrows p))
      (x2: sig (λ (p: (y0 v ⟶ z v) * _), uncurry iso_arrows p)): (* todo: use isoT *)
       isoT (x0 v) (z v) := (fst x2 ◎ fst x1, snd x1 ◎ snd x2).
-
     Next Obligation. Proof with assumption.
      destruct H as [? H1], H0 as [? H2]. unfold uncurry. simpl in *.
      split. rewrite <- associativity, (associativity a1 a2 a0), H0, left_identity...
@@ -109,22 +107,16 @@ Section contents.
    rewrite F. apply preserves_id...
   Qed. (* Putting this in the "arrows" section above (where it belongs) triggers a Coq bug. *)
 
-  Global Instance: CatId Object := λ _, arrow id _ _.
+  Global Instance: CatId Object := λ _, arrow id.
 
-  Global Program Instance: CatComp Object := λ _ _ _ x y, arrow (x ∘ y) _ _.
+  Global Program Instance: CatComp Object := λ _ _ _ x y, arrow (x ∘ y).
 
   Program Let proper_arrows (x y z: Object) (x0 y0: y ⟶ z) (x1 y1: x ⟶ y)
     (f: ∀ v, isoT (map_obj x0 v) (map_obj y0 v))
     (g: ∀ v, isoT (map_obj x1 v) (map_obj y1 v)) (v: x):
       isoT (map_obj x0 (map_obj x1 v)) (map_obj y0 (map_obj y1 v))
-   :=
-   let a := fmap x0 (fst (g v)) : (x0 (x1 v) ⟶ x0 (y1 v)) in
-   let b := fst `(f (y1 v))    in
-   let c := fmap x0 (snd (g v)) in
-   let d := snd (f (y1 v))    in
-     (b ◎ a, c ◎ d).
+   := (fst (f (y1 v)) ◎ fmap x0 (fst (g v)), fmap x0 (snd (g v)) ◎ snd (f (y1 v))).
      (* Todo: Investigate why things go wrong without the underscores. *)
-
   Next Obligation. Proof with try apply _; intuition.
    destruct (f (y1 v)) as [? [e0 e1]].
    destruct (g v) as [? [e2 e3]].
@@ -135,7 +127,7 @@ Section contents.
    rewrite <- associativity.
    rewrite (associativity _ _ (fmap x0 _)).
    rewrite e1, left_identity, <- preserves_comp, e3, preserves_id...
-  Defined.
+  Qed.
 
   Global Instance: ∀ x y z: Object, Proper ((=) ==> (=) ==> (=)) ((◎): (y ⟶ z) → (x ⟶ y) → (x ⟶ z)).
   Proof with try apply _.
@@ -171,10 +163,9 @@ Section contents.
     (* We can't remove the map_obj here and elsewhere even though it's a coercion,
      because unification isn't smart enough to resolve and use that coercion. This is
      likely due to Coq bug #2229. *)
-
   Next Obligation. split; apply left_identity. Qed.
 
-  Instance: forall x y: Object, LeftIdentity (comp x _ y) cat_id.
+  Instance: ∀ x y: Object, LeftIdentity (comp x _ y) cat_id.
   Proof.
    intros ?? a.
    exists (id_lr_arrows _ _ a).
@@ -182,7 +173,7 @@ Section contents.
    rewrite right_identity, left_identity. reflexivity.
   Qed.
 
-  Instance: forall x y: Object, RightIdentity (comp x _ y) cat_id.
+  Instance: ∀ x y: Object, RightIdentity (comp x _ y) cat_id.
   Proof.
    intros ?? a.
    exists (id_lr_arrows _ _ a).

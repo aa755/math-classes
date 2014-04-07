@@ -81,6 +81,12 @@ Section semiring_props.
   Global Instance mult_1_l: LeftIdentity (.*.) 1 := left_identity.
   Global Instance mult_1_r: RightIdentity (.*.) 1 := right_identity.
 
+  Global Instance plus_assoc: Associative (+) := simple_associativity.
+  Global Instance mult_assoc: Associative (.*.) := simple_associativity.
+
+  Global Instance plus_comm: Commutative (+) := commutativity.
+  Global Instance mult_comm: Commutative (.*.) := commutativity.
+
   Global Instance mult_0_l: LeftAbsorb (.*.) 0 := left_absorb.
 
   Global Instance mult_0_r: RightAbsorb (.*.) 0.
@@ -175,6 +181,9 @@ Section ring_props.
   Lemma negate_mult_distr_r x y : -(x * y) = x * -y. Proof. ring. Qed.
   Lemma negate_mult_negate x y : -x * -y = x * y. Proof. ring. Qed.
   Lemma negate_0: -0 = 0. Proof. ring. Qed.
+
+  Global Instance minus_0_r: RightIdentity (λ x y, x - y) 0.
+  Proof. intro x; rewrite negate_0; apply plus_0_r. Qed.
 
   Lemma equal_by_zero_sum x y : x - y = 0 ↔ x = y.
   Proof.

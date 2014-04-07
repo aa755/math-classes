@@ -3,8 +3,10 @@
 Require Import
   Unicode.Utf8 Coq.Lists.List Setoid Morphisms Permutation.
 
-Section contents.
+Instance: ∀ A, Proper (@Permutation A ==> eq) (@length A).
+Proof Permutation_length.
 
+Section contents.
   Context {T: Type}.
 
   Inductive L: Type := one: T → L | cons: T → L → L.
@@ -110,10 +112,9 @@ Section contents.
    rewrite H.
    reflexivity.
   Qed.
-
 End contents.
 
-Implicit Arguments L [].
+Arguments L : clear implicits.
 
 Fixpoint tails {A} (l: L A): L (L A) :=
   match l with
@@ -155,7 +156,6 @@ Fixpoint inits {A} (l: L A): L (L A) :=
   end.
 
 Module notations.
-
   Global Notation ne_list := L.
   Global Infix ":::" := cons (at level 60, right associativity).
     (* Todo: Try to get that "[ x ; .. ; y ]" notation working. *)
@@ -169,5 +169,4 @@ Module notations.
         | b ::: m => (a, b) ::: ne_zip l m
         end
     end.
-
 End notations.

@@ -37,7 +37,7 @@ Instance: ∀ x y : Z, Decision (x = y) := ZArith_dec.Z_eq_dec.
 Add Ring Z: (rings.stdlib_ring_theory Z).
 
 (* * Embedding N into Z *)
-Instance inject_N_Z: Cast BinNat.N.t Z := Z_of_N.
+Instance inject_N_Z: Cast N Z := Z_of_N.
 
 Instance: SemiRing_Morphism Z_of_N.
 Proof.
@@ -53,12 +53,12 @@ Proof.
 Qed.
 
 (* SRpair N and Z are isomorphic *)
-Definition Npair_to_Z (x : SRpair N) := 'pos x + - 'neg x.
+Definition Npair_to_Z (x : SRpair N) : Z := ('pos x - 'neg x)%mc.
 
 Instance: Proper (=) Npair_to_Z.
 Proof.
-  intros x y E. do 2 red in E. unfold Npair_to_Z.
-  apply (right_cancellation (+) ('neg y + 'neg x)); ring_simplify.
+  intros [xp xn] [yp yn] E; do 2 red in E; unfold Npair_to_Z; simpl in *.
+  apply (right_cancellation (+) ('yn + 'xn)); ring_simplify.
   now rewrite <-?rings.preserves_plus, E, commutativity.
 Qed.
 
@@ -91,11 +91,7 @@ Instance Z_to_Npair: Inverse Npair_to_Z := λ x,
   end.
 
 Instance: Surjective Npair_to_Z.
-Proof.
-  split; try apply _.
-  intros x y E. compute in E. rewrite E. (* FIXME: loop without the compute *)
-  now destruct y as [|p|p].
-Qed.
+Proof. split; try apply _. intros [|?|?] ? E; now rewrite <-E. Qed. 
 
 Instance: Bijective Npair_to_Z := {}.
 

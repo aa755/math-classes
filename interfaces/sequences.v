@@ -105,10 +105,8 @@ Section practical.
 
   Program Definition posh_extend (x: setoids.Object) (y: monoids.Object)
     (X: x ⟶ monoids.forget y): posh_free x ⟶ y
-    := λ u, match u return posh_free x u → y u with tt => extend X end. 
-
+    := λ u, match u return posh_free x u → y u with tt => extend X end.
   Next Obligation.
-  Proof. 
    apply monoids.encode_morphism_only.
    destruct X. simpl in *.
    apply (sequence_extend_makes_morphisms _). apply _.
@@ -121,7 +119,7 @@ Section practical.
    unfold NaturalTransformation.
    intros [???] [???] [??] ?? E.
    simpl in *.
-   rewrite E. 
+   rewrite E.
    apply sequence_inject_natural.
    apply _.
    reflexivity.
@@ -136,13 +134,7 @@ Section practical.
     split.
      repeat intro.
      simpl in *.
-     assert (f x0 = f y0).
-      destruct fM.
-      apply sm_proper.
-      assumption.
-     unfold compose.
-     simpl in *.
-     rewrite H4.
+     rewrite H3.
      symmetry.
      apply (@sequence_extend_commutes PS x _ _ _ _ _ _ H2 f fM).
      reflexivity.
@@ -165,6 +157,7 @@ Section practical.
 
   Definition fold `{MonUnit M} `{SgOp M}: free M → M := extend id.
 
-  Global Instance fold_mor `{Monoid M}: Monoid_Morphism (fold (M:=M)) := _.
+  Global Instance fold_mor `{Monoid M}: Monoid_Morphism (fold (M:=M)).
+  Proof. apply _. Qed.
 
 End practical.
