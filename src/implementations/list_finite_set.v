@@ -1,5 +1,5 @@
 Require Import
-  List SetoidList implementations.list
+  Coq.Lists.List SetoidList implementations.list
   abstract_algebra interfaces.finite_sets interfaces.orders
   theory.lattices orders.lattices.
 

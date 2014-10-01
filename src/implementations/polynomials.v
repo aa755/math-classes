@@ -1,5 +1,5 @@
 Require Import
-  List
+  Coq.Lists.List
   abstract_algebra.
 
 Section contents.
