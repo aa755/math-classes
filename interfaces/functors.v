@@ -65,7 +65,11 @@ Section id_functor.
 
   Global Instance id_functor: Functor (id: C → C) _.
   Proof.
-   constructor; try reflexivity; try apply _.   Qed.
+   constructor; try reflexivity; try apply _. intros.
+   change (Setoid_Morphism (id: (a ⟶ b) → (a ⟶ b))). 
+   apply _.
+  Qed.
+
 End id_functor.
 
 Section compose_functors.
