@@ -16,7 +16,9 @@ Arguments bind {M MonadBind A B} _ _.
 Arguments join {M MonadJoin A} _.
 
 Notation "m ≫= f" := (bind f m) (at level 60, right associativity) : mc_scope.
-Notation "x ← y ; z" := (y ≫= (λ x : _, z)) (at level 65, next at level 35, right associativity, only parsing) : mc_scope.
+
+(* y at next level? is this right?*)
+Notation "x ← y ; z" := (y ≫= (λ x : _, z)) (at level 65, y at next level, right associativity, only parsing) : mc_scope.
 (* Notation "x ≫ y" := (_ ← x ; y) (at level 33, right associativity, only parsing) : mc_scope. *)
 
 Class Monad (M : Type → Type) `{∀ A, Equiv A → Equiv (M A)} 
