@@ -14,7 +14,6 @@ Section contents.
 
   Global Instance: Functor forget _.
   Proof. constructor; intros; try apply _; repeat intro; try reflexivity. 
-         unfold fmap. unfold Fmap_instance_0. apply setoids.id_morphism.
   Qed.
 
 End contents.
