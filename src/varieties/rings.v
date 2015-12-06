@@ -12,9 +12,9 @@ Definition sig: Signature := single_sorted_signature
 
 Section laws.
   Global Instance: Plus (Term0 sig nat tt) :=
-    λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x).
+    Build_Plus _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x)).
   Global Instance: Mult (Term0 sig nat tt) :=
-    λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x).
+    Build_Mult _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x)).
   Global Instance: Zero (Term0 sig nat tt) := Op sig _ zero.
   Global Instance: One (Term0 sig nat tt) := Op sig _ one.
   Global Instance: Negate (Term0 sig nat tt) := App sig _ _ _ (Op sig _ negate).
@@ -49,8 +49,8 @@ Definition Object := varieties.Object theory.
 
 Section decode_operations.
   Context `{AlgebraOps theory A}.
-  Global Instance: Plus (A tt) := algebra_op plus.
-  Global Instance: Mult (A tt) := algebra_op mult.
+  Global Instance: Plus (A tt) := Build_Plus _ (algebra_op plus).
+  Global Instance: Mult (A tt) := Build_Mult _ (algebra_op mult).
   Global Instance: Zero (A tt) := algebra_op zero.
   Global Instance: One (A tt) := algebra_op one.
   Global Instance: Negate (A tt) := algebra_op negate.
@@ -108,7 +108,12 @@ Lemma encode_morphism_only
 Proof.
  constructor.
     intros []. apply _.
-   intros []; simpl.
+   intros []; simpl;
+      (replace (H plus) with (@canonical_names.plus (A tt) _);[| reflexivity]);
+      (replace (H1 plus) with (@canonical_names.plus (B tt) _);[| reflexivity]);
+      (replace (H mult) with (@canonical_names.mult (A tt) _);[| reflexivity]);
+      (replace (H1 mult) with (@canonical_names.mult (B tt) _);[| reflexivity]).
+
        apply rings.preserves_plus.
       apply rings.preserves_mult.
      apply rings.preserves_0.
@@ -118,10 +123,6 @@ Proof.
  apply encode_algebra_only.
 Qed.
 
-Lemma encode_morphism_and_ops `{Ring A} `{Ring B} {f : A → B} `{!SemiRing_Morphism f}:
-  @HomoMorphism sig (λ _, A) (λ _, B) _ _ _ _ (λ _, f).
-Proof. intros. apply (encode_morphism_only _). Qed.
-
 Lemma decode_morphism_and_ops
   `{InVariety theory x} `{InVariety theory y} `{!HomoMorphism theory x y f}:
     SemiRing_Morphism (f tt).
@@ -130,3 +131,13 @@ Proof.
  repeat (constructor; try apply _)
  ; [ apply (P plus) | apply (P zero) | apply (P mult) | apply (P one) ].
 Qed.
+
+Lemma encode_morphism_and_ops `{Ring A} `{Ring B} {f : A → B} `{!SemiRing_Morphism f}:
+  @HomoMorphism sig (λ _, A) (λ _, B) _ _ _ _ (λ _, f).
+Proof. intros.
+ eapply (encode_morphism_only _).
+ Unshelve.
+  eauto with *.
+  compute. destruct Aplus, Aplus0, Amult, Amult0. exact SemiRing_Morphism0.
+  Qed.
+

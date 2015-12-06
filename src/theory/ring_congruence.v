@@ -35,8 +35,8 @@ Section quotient_ring.
   Global Instance quotient_equiv: Equiv (Quotient A R) := λ x y, R ('x) ('y).
   Global Instance quotient_0: Zero (Quotient A R) := cast A (Quotient A R) 0.
   Global Instance quotient_1: One (Quotient A R) := cast A (Quotient A R) 1.
-  Global Instance quotient_plus: Plus (Quotient A R) := λ x y, cast A (Quotient A R) ('x + 'y).
-  Global Instance quotient_mult: Mult (Quotient A R) := λ x y, cast A (Quotient A R) ('x * 'y).
+  Global Instance quotient_plus: Plus (Quotient A R) := Build_Plus _ (λ x y, cast A (Quotient A R) ('x + 'y)).
+  Global Instance quotient_mult: Mult (Quotient A R) := Build_Mult _ (λ x y, cast A (Quotient A R) ('x * 'y)).
   Global Instance quotient_negate: Negate (Quotient A R) := λ x, cast A (Quotient A R) (-'x).
 
   Instance: Setoid (Quotient A R).
@@ -47,10 +47,10 @@ Section quotient_ring.
     intros [x] [y] [z] E1 E2. now transitivity y.
   Qed.
 
-  Instance: Proper ((=) ==> (=) ==> (=)) quotient_plus.
+  Instance: Proper ((=) ==> (=) ==> (=)) (@plus _ quotient_plus).
   Proof. intros [?] [?] E1 [?] [?] E2. now rapply ring_congr_plus. Qed.
 
-  Instance: Proper ((=) ==> (=) ==> (=)) quotient_mult.
+  Instance: Proper ((=) ==> (=) ==> (=)) (@mult _ quotient_mult).
   Proof. intros [?] [?] E1 [?] [?] E2. now rapply ring_congr_mult. Qed.
 
   Instance: Proper ((=) ==> (=)) quotient_negate.

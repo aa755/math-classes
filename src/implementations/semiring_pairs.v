@@ -45,10 +45,10 @@ Global Instance: Proper ((=) ==> (=)) SRpair_inject.
 Proof. intros x1 x2 E. unfold equiv, SRpair_equiv. simpl. now rewrite E. Qed.
 
 (* Relations, operations and constants *)
-Global Instance SRpair_plus: Plus (SRpair SR) := λ x y, C (pos x + pos y) (neg x + neg y).
+Global Instance SRpair_plus: Plus (SRpair SR) := Build_Plus _ (λ x y, C (pos x + pos y) (neg x + neg y)).
 Global Instance SRpair_negate: Negate (SRpair SR) := λ x, C (neg x) (pos x).
 Global Instance SRpair_0: Zero (SRpair SR) := ('0 : SRpair SR).
-Global Instance SRpair_mult: Mult (SRpair SR) := λ x y, C (pos x * pos y + neg x * neg y) (pos x * neg y + neg x * pos y).
+Global Instance SRpair_mult: Mult (SRpair SR) := Build_Mult _ (λ x y, C (pos x * pos y + neg x * neg y) (pos x * neg y + neg x * pos y)).
 Global Instance SRpair_1: One (SRpair SR) := ('1 : SRpair SR).
 
 Ltac unfolds := unfold SRpair_negate, SRpair_plus, equiv, SRpair_equiv in *; simpl in *.
@@ -60,7 +60,7 @@ Proof.
   rewrite commutativity, <- E. ring.
 Qed.
 
-Instance: Proper ((=) ==> (=) ==> (=)) SRpair_plus.
+Instance: Proper ((=) ==> (=) ==> (=)) (@plus _ SRpair_plus).
 Proof with try ring.
   intros x1 y1 E1 x2 y2 E2. unfolds.
   transitivity (pos x1 + neg y1 + (pos x2 + neg y2))...
@@ -75,10 +75,10 @@ Proof with try ring.
   now rewrite E.
 Qed.
 
-Instance: Commutative SRpair_mult.
+Instance: Commutative (@mult _ SRpair_mult).
 Proof. repeat intro. ring_on_sr. Qed.
 
-Instance: Proper ((=) ==> (=) ==> (=)) SRpair_mult.
+Instance: Proper ((=) ==> (=) ==> (=)) (@mult _ SRpair_mult).
 Proof.
   intros x1 y1 E1 x2 y2 E2.
   transitivity (x1 * y2).

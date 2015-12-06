@@ -295,7 +295,8 @@ Section from_stdlib_semiring_theory.
 
   Add Ring R2: H.
 
-  Definition from_stdlib_semiring_theory: @SemiRing R Re Rplus Rmult Rzero Rone.
+  Definition from_stdlib_semiring_theory: @SemiRing R Re 
+      (Build_Plus R Rplus) (Build_Mult R Rmult) Rzero Rone.
   Proof.
    repeat (constructor; try assumption); repeat intro
    ; unfold equiv, mon_unit, sg_op, zero_is_mon_unit, plus_is_sg_op,
@@ -313,7 +314,8 @@ Section from_stdlib_ring_theory.
 
   Add Ring R3: H.
 
-  Definition from_stdlib_ring_theory: @Ring R Re Rplus Rmult Rzero Rone Rnegate.
+  Definition from_stdlib_ring_theory: @Ring R Re 
+    (Build_Plus R Rplus) (Build_Mult R Rmult) Rzero Rone Rnegate.
   Proof.
    repeat (constructor; try assumption); repeat intro
    ; unfold equiv, mon_unit, sg_op, zero_is_mon_unit, plus_is_sg_op,

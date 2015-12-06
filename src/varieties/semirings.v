@@ -11,9 +11,9 @@ Definition sig: Signature := single_sorted_signature
 
 Section laws.
   Global Instance: Plus (Term0 sig nat tt) :=
-    λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x).
+    Build_Plus _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x)).
   Global Instance: Mult (Term0 sig nat tt) :=
-    λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x).
+    Build_Mult _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x)).
   Global Instance: Zero (Term0 sig nat tt) := Op sig _ zero.
   Global Instance: One (Term0 sig nat tt) := Op sig _ one.
 
@@ -75,8 +75,8 @@ End from_instance.
 
 Section ops_from_alg_to_sr.
   Context `{AlgebraOps theory A}.
-  Global Instance: Plus (A tt) := algebra_op plus.
-  Global Instance: Mult (A tt) := algebra_op mult.
+  Global Instance: Plus (A tt) := Build_Plus _ (algebra_op plus).
+  Global Instance: Mult (A tt) := Build_Mult _ (algebra_op mult).
   Global Instance: Zero (A tt) := algebra_op zero.
   Global Instance: One (A tt) := algebra_op one.
 End ops_from_alg_to_sr.
@@ -86,7 +86,11 @@ Lemma mor_from_sr_to_alg `{InVariety theory A} `{InVariety theory B}
 Proof.
  constructor.
     intros []. apply _.
-   intros []; simpl.
+   intros []; simpl;
+      (replace (AlgebraOps0 plus) with (@canonical_names.plus (A tt) _);[| reflexivity]);
+      (replace (AlgebraOps1 plus) with (@canonical_names.plus (B tt) _);[| reflexivity]);
+      (replace (AlgebraOps0 mult) with (@canonical_names.mult (A tt) _);[| reflexivity]);
+      (replace (AlgebraOps1 mult) with (@canonical_names.mult (B tt) _);[| reflexivity]).
       apply rings.preserves_plus.
      apply rings.preserves_mult.
     change (f tt 0 = 0). apply rings.preserves_0.

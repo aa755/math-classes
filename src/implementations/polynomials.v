@@ -41,12 +41,12 @@ Section contents.
   Global Instance: Setoid poly.
   Proof. split; try apply _. Qed.
 
-  Global Instance: Plus poly := fix F p q :=
+  Global Instance: Plus poly := Build_Plus _ (fix F p q :=
     match p, q with
     | [], _ => q
     | _, [] => p
     | h :: t, h' :: t' => h + h' :: F t t'
-    end.
+    end).
 
   Global Instance: Negate poly := map (-).
 
@@ -56,11 +56,11 @@ Section contents.
     | d :: q1 => c*d :: poly_mult_cr q1 c
     end.
 
-  Global Instance: Mult poly := fix F p q :=
+  Global Instance: Mult poly := Build_Mult _ (fix F p q :=
     match p with
     | [] => 0
     | c :: p1 => poly_mult_cr q c + (0 :: F p1 q)
-    end.
+    end).
 
   Global Instance: Ring poly.
    constructor.

@@ -102,15 +102,15 @@ Typeclasses Transparent Cast.
 (* Other canonically named relations/operations/constants: *)
 Class SgOp A := sg_op: A → A → A.
 Class MonUnit A := mon_unit: A.
-Class Plus A := plus: A → A → A.
-Class Mult A := mult: A → A → A.
+Class Plus A := {plus: A → A → A}.
+Class Mult A := {mult: A → A → A}.
 Class One A := one: A.
 Class Zero A := zero: A.
 Class Negate A := negate: A → A.
 Class DecRecip A := dec_recip: A → A.
 Definition ApartZero R `{Zero R} `{Apart R} := sig (≶ zero).
 Class Recip A `{Apart A} `{Zero A} := recip: ApartZero A → A.
-Typeclasses Transparent SgOp MonUnit Plus Mult Zero One Negate.
+Typeclasses Transparent SgOp MonUnit  Zero One Negate.
 
 Class Meet A := meet: A → A → A.
 Class Join A := join: A → A → A.
@@ -158,8 +158,13 @@ Instance: Params (@contains) 3.
 Instance: Params (@singleton) 3.
 Instance: Params (@difference) 2.
 
-Instance plus_is_sg_op `{f : Plus A} : SgOp A := f.
-Instance mult_is_sg_op `{f : Mult A} : SgOp A := f.
+Instance plus_is_sg_op `{f : Plus A} : SgOp A.
+  destruct f. exact plus0.
+Defined.
+Instance mult_is_sg_op `{f : Mult A} : SgOp A.
+  destruct f. exact mult0.
+Defined.
+
 Instance one_is_mon_unit `{c : One A} : MonUnit A := c.
 Instance zero_is_mon_unit `{c : Zero A} : MonUnit A := c.
 Instance meet_is_sg_op `{f : Meet A} : SgOp A := f.
