@@ -113,9 +113,14 @@ Section semiringmor_props.
   Context `{SemiRing_Morphism A B f}.
 
   Lemma preserves_0: f 0 = 0.
-  Proof (preserves_mon_unit (f:=f)).
+  Proof. apply (@preserves_mon_unit _ _ _ _ _ _ _ _ _
+     semiringmor_plus_mor).
+  Qed.
   Lemma preserves_1: f 1 = 1.
-  Proof (preserves_mon_unit (f:=f)).
+  Proof. apply (@preserves_mon_unit _ _ _ _ _ _ _ _ _
+     semiringmor_mult_mor).
+  Qed.
+     
   Lemma preserves_mult: ∀ x y, f (x * y) = f x * f y.
   Proof. intros. apply preserves_sg_op. Qed.
   Lemma preserves_plus: ∀ x y, f (x + y) = f x + f y.
@@ -170,7 +175,7 @@ Section ring_props.
   Global Instance Ring_Semi: SemiRing R.
   Proof. repeat (constructor; try apply _). Qed.
 
-  Definition negate_involutive x : - - x = x := groups.negate_involutive x. (* alias for convinience *)
+  Definition negate_involutive x : - - x = x := (@groups.negate_involutive _ _ plus 0 _ _ x). (* alias for convinience *)
   Lemma plus_negate_r x : x + -x = 0. Proof. ring. Qed.
   Lemma plus_negate_l x : -x + x = 0. Proof. ring. Qed.
   Lemma negate_swap_r x y : x - y = -(y - x). Proof. ring. Qed.
@@ -250,7 +255,7 @@ Hint Extern 6 (PropHolds (1 ≶ 0)) => eapply @intdom_nontrivial_apart : typecla
 Section ringmor_props.
   Context `{Ring A} `{Ring B} `{!SemiRing_Morphism (f : A → B)}.
 
-  Definition preserves_negate x : f (-x) = -f x := groups.preserves_negate x. (* alias for convinience *)
+  Definition preserves_negate x : f (-x) = -f x := (@groups.preserves_negate _ _ plus 0 _ _ _ _ plus 0 _ _ _ _ x). (* alias for convinience *)
 
   Lemma preserves_minus x y : f (x - y) = f x - f y.
   Proof.
@@ -279,7 +284,7 @@ Section from_another_ring.
   Lemma projected_ring: Ring B.
   Proof.
     split.
-      now apply (groups.projected_ab_group f).
+      now apply (@groups.projected_ab_group _ _ plus 0 _ _ _ _ _ plus 0 _ f).
      now apply (groups.projected_com_monoid f mult_correct one_correct).
     repeat intro; apply (injective f). rewrite plus_correct, !mult_correct, plus_correct.
     now rewrite distribute_l.
@@ -296,11 +301,10 @@ Section from_stdlib_semiring_theory.
   Add Ring R2: H.
 
   Definition from_stdlib_semiring_theory: @SemiRing R Re 
-      (Build_Plus R Rplus) (Build_Mult R Rmult) Rzero Rone.
+      (Build_Plus R Rplus) (Build_Mult R Rmult) (Build_Zero R Rzero) (Build_One R Rone).
   Proof.
    repeat (constructor; try assumption); repeat intro
-   ; unfold equiv, mon_unit, sg_op, zero_is_mon_unit, plus_is_sg_op,
-     one_is_mon_unit, mult_is_sg_op, zero, mult, plus; ring.
+   ; unfold equiv, mon_unit, sg_op, zero, one, mult, plus; try ring.
   Qed.
 End from_stdlib_semiring_theory.
 
@@ -315,11 +319,11 @@ Section from_stdlib_ring_theory.
   Add Ring R3: H.
 
   Definition from_stdlib_ring_theory: @Ring R Re 
-    (Build_Plus R Rplus) (Build_Mult R Rmult) Rzero Rone Rnegate.
+    (Build_Plus R Rplus) (Build_Mult R Rmult) (Build_Zero _ Rzero) (Build_One _ Rone) Rnegate.
   Proof.
    repeat (constructor; try assumption); repeat intro
-   ; unfold equiv, mon_unit, sg_op, zero_is_mon_unit, plus_is_sg_op,
-     one_is_mon_unit, mult_is_sg_op, mult, plus, negate; ring.
+   ; unfold equiv, mon_unit, sg_op, zero, plus,
+     one, mult, mult, plus, negate; ring.
   Qed.
 End from_stdlib_ring_theory.
 

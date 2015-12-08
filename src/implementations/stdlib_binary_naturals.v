@@ -5,8 +5,8 @@ Require Import
 
 (* canonical names for relations/operations/constants: *)
 Instance N_equiv : Equiv N := eq.
-Instance N_0 : Zero N := 0%N.
-Instance N_1 : One N := 1%N.
+Instance N_0 : Zero N := Build_Zero _ 0%N.
+Instance N_1 : One N := Build_One _ 1%N.
 Instance N_plus : Plus N := Build_Plus _ Nplus.
 Instance N_mult : Mult N := Build_Mult _ Nmult.
 

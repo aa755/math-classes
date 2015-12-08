@@ -14,8 +14,8 @@ Section laws.
     Build_Plus _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x)).
   Global Instance: Mult (Term0 sig nat tt) :=
     Build_Mult _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x)).
-  Global Instance: Zero (Term0 sig nat tt) := Op sig _ zero.
-  Global Instance: One (Term0 sig nat tt) := Op sig _ one.
+  Global Instance: Zero (Term0 sig nat tt) := Build_Zero _ (Op sig _ zero).
+  Global Instance: One (Term0 sig nat tt) := Build_One _ (Op sig _ one).
 
   Local Notation x := (Var sig _ 0%nat tt).
   Local Notation y := (Var sig _ 1%nat tt).
@@ -77,8 +77,8 @@ Section ops_from_alg_to_sr.
   Context `{AlgebraOps theory A}.
   Global Instance: Plus (A tt) := Build_Plus _ (algebra_op plus).
   Global Instance: Mult (A tt) := Build_Mult _ (algebra_op mult).
-  Global Instance: Zero (A tt) := algebra_op zero.
-  Global Instance: One (A tt) := algebra_op one.
+  Global Instance: Zero (A tt) := Build_Zero _ (algebra_op zero).
+  Global Instance: One (A tt) := Build_One _ (algebra_op one).
 End ops_from_alg_to_sr.
 
 Lemma mor_from_sr_to_alg `{InVariety theory A} `{InVariety theory B}

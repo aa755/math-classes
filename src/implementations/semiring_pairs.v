@@ -47,9 +47,9 @@ Proof. intros x1 x2 E. unfold equiv, SRpair_equiv. simpl. now rewrite E. Qed.
 (* Relations, operations and constants *)
 Global Instance SRpair_plus: Plus (SRpair SR) := Build_Plus _ (λ x y, C (pos x + pos y) (neg x + neg y)).
 Global Instance SRpair_negate: Negate (SRpair SR) := λ x, C (neg x) (pos x).
-Global Instance SRpair_0: Zero (SRpair SR) := ('0 : SRpair SR).
+Global Instance SRpair_0: Zero (SRpair SR) := Build_Zero _ ('0 : SRpair SR).
 Global Instance SRpair_mult: Mult (SRpair SR) := Build_Mult _ (λ x y, C (pos x * pos y + neg x * neg y) (pos x * neg y + neg x * pos y)).
-Global Instance SRpair_1: One (SRpair SR) := ('1 : SRpair SR).
+Global Instance SRpair_1: One (SRpair SR) := Build_One _ ('1 : SRpair SR).
 
 Ltac unfolds := unfold SRpair_negate, SRpair_plus, equiv, SRpair_equiv in *; simpl in *.
 Ltac ring_on_sr := repeat intro; unfolds; try ring.

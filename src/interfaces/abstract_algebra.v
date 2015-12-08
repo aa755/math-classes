@@ -107,16 +107,16 @@ Section upper_classes.
   Context {Aplus : Plus A} {Amult : Mult A} {Azero : Zero A} {Aone : One A}.
 
   Class SemiRing : Prop :=
-    { semiplus_monoid :> @CommutativeMonoid plus_is_sg_op zero_is_mon_unit
-    ; semimult_monoid :> @CommutativeMonoid mult_is_sg_op one_is_mon_unit
+    { semiplus_monoid :> @CommutativeMonoid plus zero
+    ; semimult_monoid :> @CommutativeMonoid mult one
     ; semiring_distr :> LeftDistribute (.*.) (+)
     ; semiring_left_absorb :> LeftAbsorb (.*.) 0 }.
 
   Context {Anegate : Negate A}.
 
   Class Ring : Prop :=
-    { ring_group :> @AbGroup plus_is_sg_op zero_is_mon_unit _
-    ; ring_monoid :> @CommutativeMonoid mult_is_sg_op one_is_mon_unit
+    { ring_group :> @AbGroup plus zero _
+    ; ring_monoid :> @CommutativeMonoid mult one
     ; ring_dist :> LeftDistribute (.*.) (+) }.
 
   (* For now, we follow CoRN/ring_theory's example in having Ring and SemiRing
@@ -230,8 +230,8 @@ Section morphism_classes.
   Class SemiRing_Morphism {Aplus Amult Azero Aone Bplus Bmult Bzero Bone} (f : A → B) :=
     { semiringmor_a : @SemiRing A Ae Aplus Amult Azero Aone
     ; semiringmor_b : @SemiRing B Be Bplus Bmult Bzero Bone
-    ; semiringmor_plus_mor :> @Monoid_Morphism zero_is_mon_unit zero_is_mon_unit plus_is_sg_op plus_is_sg_op f
-    ; semiringmor_mult_mor :> @Monoid_Morphism one_is_mon_unit one_is_mon_unit mult_is_sg_op mult_is_sg_op f }.
+    ; semiringmor_plus_mor :> @Monoid_Morphism zero zero plus plus f
+    ; semiringmor_mult_mor :> @Monoid_Morphism one one mult mult f }.
 
   Class Lattice_Morphism {Ajoin Ameet Bjoin Bmeet} (f : A → B) :=
     { latticemor_a : @Lattice A Ae Ajoin Ameet

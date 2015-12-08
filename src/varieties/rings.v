@@ -15,8 +15,8 @@ Section laws.
     Build_Plus _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ plus) x)).
   Global Instance: Mult (Term0 sig nat tt) :=
     Build_Mult _ (λ x, App sig _ _ _ (App sig _ _ _ (Op sig _ mult) x)).
-  Global Instance: Zero (Term0 sig nat tt) := Op sig _ zero.
-  Global Instance: One (Term0 sig nat tt) := Op sig _ one.
+  Global Instance: Zero (Term0 sig nat tt) := Build_Zero _ (Op sig _ zero).
+  Global Instance: One (Term0 sig nat tt) := Build_One _ (Op sig _ one).
   Global Instance: Negate (Term0 sig nat tt) := App sig _ _ _ (Op sig _ negate).
 
   Local Notation x := (Var sig nat 0%nat tt).
@@ -51,8 +51,8 @@ Section decode_operations.
   Context `{AlgebraOps theory A}.
   Global Instance: Plus (A tt) := Build_Plus _ (algebra_op plus).
   Global Instance: Mult (A tt) := Build_Mult _ (algebra_op mult).
-  Global Instance: Zero (A tt) := algebra_op zero.
-  Global Instance: One (A tt) := algebra_op one.
+  Global Instance: Zero (A tt) := Build_Zero _ (algebra_op zero).
+  Global Instance: One (A tt) := Build_One _ (algebra_op one).
   Global Instance: Negate (A tt) := algebra_op negate.
 End decode_operations.
 
@@ -73,15 +73,59 @@ Section encode_with_ops.
   Definition object: Object := varieties.object theory (λ _, A).
 End encode_with_ops.
 
+Section EncodeDecodeID.
+Context `{Plus A} `{Mult A} `{Zero A} `{One A} `{Negate A}.
+  Lemma encodeDecodeIDPlus :
+  @Plus_instance_1 (fun _ : sorts sig => A)
+     (encode_operations A) ≡ _.
+  Proof. 
+    compute.
+    match goal with 
+    [|- _  ≡ ?r] => destruct r
+    end; apply eq_refl.
+  Qed.
+
+  Lemma encodeDecodeIDMult :
+  @Mult_instance_1 (fun _ : sorts sig => A)
+     (encode_operations A) ≡ _.
+  Proof. 
+    compute.
+    match goal with 
+    [|- _  ≡ ?r] => destruct r
+    end; apply eq_refl.
+  Qed.
+     
+  Lemma encodeDecodeIDOne :
+  @One_instance_1 (fun _ : sorts sig => A)
+     (encode_operations A) ≡ _.
+  Proof. 
+    compute.
+    match goal with 
+    [|- _  ≡ ?r] => destruct r
+    end; apply eq_refl.
+  Qed.
+     
+  Lemma encodeDecodeIDZero :
+  @Zero_instance_1 (fun _ : sorts sig => A)
+     (encode_operations A) ≡ _.
+  Proof. 
+    compute.
+    match goal with 
+    [|- _  ≡ ?r] => destruct r
+    end; apply eq_refl.
+  Qed.
+
+End EncodeDecodeID.
+Hint Rewrite encodeDecodeIDPlus encodeDecodeIDMult
+ encodeDecodeIDOne encodeDecodeIDZero : EncodeDecodeID.
+ 
 Lemma encode_algebra_only `{!AlgebraOps theory A} `{∀ u, Equiv (A u)} `{!Ring (A tt)}: Algebra sig A .
 Proof. constructor; intros []; simpl in *; try apply _;eapply sg_op_proper.
 Unshelve.
-- replace  (AlgebraOps0 plus) with (@plus_is_sg_op (A tt) _);[| reflexivity]. 
+- replace  (AlgebraOps0 plus) with (@canonical_names.plus (A tt) _);[| reflexivity]. 
   eauto with typeclass_instances.
-- replace  (AlgebraOps0 mult) with (@mult_is_sg_op (A tt) _);[| reflexivity].
-  (* eauto with typeclass_instances.  why does this not work?*)
-  destruct Ring0. destruct ring_monoid. destruct commonoid_mon.
-  exact monoid_semigroup.
+- replace  (AlgebraOps0 mult) with (@canonical_names.mult (A tt) _);[| reflexivity].
+  eauto with typeclass_instances.
 Qed.
 
 Instance decode_variety_and_ops `{InVariety theory A}: Ring (A tt).
@@ -120,7 +164,11 @@ Proof.
       (replace (H plus) with (@canonical_names.plus (A tt) _);[| reflexivity]);
       (replace (H1 plus) with (@canonical_names.plus (B tt) _);[| reflexivity]);
       (replace (H mult) with (@canonical_names.mult (A tt) _);[| reflexivity]);
-      (replace (H1 mult) with (@canonical_names.mult (B tt) _);[| reflexivity]).
+      (replace (H1 mult) with (@canonical_names.mult (B tt) _);[| reflexivity]);
+      (replace (H one) with (@canonical_names.one (A tt) _);[| reflexivity]);
+      (replace (H1 one) with (@canonical_names.one (B tt) _);[| reflexivity]);
+      (replace (H zero) with (@canonical_names.zero (A tt) _);[| reflexivity]);
+      (replace (H1 zero) with (@canonical_names.zero (B tt) _);[| reflexivity]).
 
        apply rings.preserves_plus.
       apply rings.preserves_mult.
@@ -144,8 +192,13 @@ Lemma encode_morphism_and_ops `{Ring A} `{Ring B} {f : A → B} `{!SemiRing_Morp
   @HomoMorphism sig (λ _, A) (λ _, B) _ _ _ _ (λ _, f).
 Proof. intros.
  eapply (encode_morphism_only _).
- Unshelve.
-  eauto with *.
-  compute. destruct Aplus, Aplus0, Amult, Amult0. exact SemiRing_Morphism0.
+ Unshelve. 
+ repeat  rewrite encodeDecodeIDMult.
+ repeat  rewrite encodeDecodeIDPlus.
+ repeat  rewrite encodeDecodeIDOne.
+ repeat  rewrite encodeDecodeIDZero.
+ (*autorewrite with EncodeDecodeID  why does this not work?
+ make a custom tactic?*)
+ exact SemiRing_Morphism0.
   Qed.
 

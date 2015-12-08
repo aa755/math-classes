@@ -7,8 +7,8 @@ Require Import
 
 Instance nat_equiv: Equiv nat := eq.
 Instance nat_plus: Plus nat := Build_Plus _ Peano.plus.
-Instance nat_0: Zero nat := 0%nat.
-Instance nat_1: One nat := 1%nat.
+Instance nat_0: Zero nat := Build_Zero _ 0%nat.
+Instance nat_1: One nat :=Build_One _ 1%nat.
 Instance nat_mult: Mult nat := Build_Mult _ Peano.mult.
 
 Instance: SemiRing nat.

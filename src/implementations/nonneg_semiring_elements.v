@@ -27,9 +27,9 @@ Next Obligation.
   now apply nonneg_mult_compat.
 Qed.
 
-Global Program Instance NonNeg_0: Zero (R⁺) := 0↾_.
+Global Program Instance NonNeg_0: Zero (R⁺) := Build_Zero _ (0↾_).
 
-Global Program Instance NonNeg_1: One (R⁺) := 1↾_.
+Global Program Instance NonNeg_1: One (R⁺) := Build_One _ (1↾_).
 Next Obligation. apply le_0_1. Qed.
 
 (* * Equalitity *)

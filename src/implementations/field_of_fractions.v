@@ -44,8 +44,8 @@ Global Program Instance Frac_plus: Plus (Frac R) :=
   Build_Plus _ (λ x y, frac (num x * den y + num y * den x) (den x * den y) _).
 Next Obligation. destruct x, y. simpl. now apply mult_ne_0. Qed.
 
-Global Instance Frac_0: Zero (Frac R) := ('0 : Frac R).
-Global Instance Frac_1: One (Frac R) := ('1 : Frac R).
+Global Instance Frac_0: Zero (Frac R) := Build_Zero _ ('0 : Frac R).
+Global Instance Frac_1: One (Frac R) := Build_One _ ('1 : Frac R).
 
 Global Instance Frac_negate: Negate (Frac R) := λ x, frac (- num x) (den x) (den_ne_0 x).
 

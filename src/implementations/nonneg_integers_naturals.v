@@ -24,9 +24,13 @@ Instance: Setoid_Morphism of_nat := {}.
 
 Instance: SemiRing_Morphism of_nat.
 Proof.
-  repeat (split; try apply _); repeat intro; unfold_equivs.
-     now apply rings.preserves_plus.
-    unfold mon_unit, zero_is_mon_unit. now apply rings.preserves_0.
+  repeat (split; try apply _); repeat intro; simpl; unfold sg_op, mon_unit; unfold_equivs;
+  simpl. P
+  (replace (Nat.add) with (@plus nat _);[|reflexivity]);
+  apply rings.preserves_plus.
+    unfold mon_unit. 
+    unfold peano_naturals.NaturalsToSemiRing_instance_0. simpl.
+     now apply rings.preserves_0.
    now apply rings.preserves_mult.
   unfold mon_unit, one_is_mon_unit. now apply rings.preserves_1.
 Qed.

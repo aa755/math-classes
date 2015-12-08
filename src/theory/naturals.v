@@ -10,7 +10,7 @@ Proof.
   pose proof (proj2 (@categories.initials_unique' (varieties.Object semirings.theory)
     _ _ _ _ _ (semirings.object N) (semirings.object N2) _ naturals_initial _ naturals_initial) tt x).
   simpl in H1.
-  destruct plus0, plus1. destruct mult0, mult1.
+  destruct plus0, plus1. destruct mult0, mult1,zero0,zero1,one0,one1.
   apply H1.    
     
   (* todo: separate pose necessary due to Coq bug *)
@@ -22,7 +22,7 @@ Proof.
   symmetry.
   pose proof (@semirings.mor_from_sr_to_alg _ _ _ (semirings.variety N) 
   _ _ _ (semirings.variety SR) (λ _, f)). simpl in H1.
-  destruct plus0, Aplus. destruct mult0, Amult.
+  destruct plus0, Aplus,zero0, Azero. destruct mult0, Amult, one0, Aone.
   specialize (H1 SemiRing_Morphism0).
   set (@varieties.arrow semirings.theory _ _ _ (semirings.variety N) _ _ _ (semirings.variety SR) (λ _, f) H1).
   apply (naturals_initial _ a tt x).

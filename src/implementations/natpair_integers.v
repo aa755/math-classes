@@ -1,3 +1,12 @@
+
+Require Import
+ MathClasses.theory.rings.
+Require Import MathClasses.interfaces.abstract_algebra.
+ Global Instance RingMultProper  `{Ring A} : Proper (equiv ==> equiv ==> equiv) mult.
+ Proof. intros ? ? H1 ? ? H2. rewrite H1, H2. reflexivity.
+ Qed.
+   
+
 (* The standard library's implementation of the integers (BinInt) uses nasty binary positive
   crap with various horrible horrible bit fiddling operations on it (especially Pminus).
   The following is a much simpler implementation whose correctness can be shown much
@@ -113,29 +122,42 @@ Let zero_product_aux a b :
 Proof.
   rewrite <-rings.preserves_mult.
   rewrite <-(naturals.to_semiring_unique (SRpair_inject)).
-  intros E. setoid_inject. 
-(* destruct (zero_product _ _ _ E) as [C|C].*)
-set (@zero_product _ _ _ SRpair_0). 
-set (@zero_product _ _ _ zero0 _ a b). 
-(* Strange E shouldn't match either of these 
-Did the behaviour of setoid_inject change
-Ltac setoid_inject :=
-  match goal with
-  | E : _ = ?f _ |- _ => apply (injective f) in E
-  | E : ?f _ = _ |- _ => apply (injective f) in E
-  | E : _ ≡ _ |-  ?G => change (id G); injection E; clear E; intros; unfold id at 1 
-  end.
-*)
-(*   left. now rewrite C, rings.preserves_0.
+  intros E. setoid_inject. destruct (zero_product _ _ E) as [C|C].
+   left. now rewrite C, rings.preserves_0.
   right. now rewrite C, rings.preserves_0.
-Qed.*)
-Admitted.
+Qed.
 
 Global Instance: ZeroProduct Z.
 Proof.
   intros x y E.
-  destruct (SRpair_abs x) as [[a A]|[a A]], (SRpair_abs y) as [[b B]|[b B]].
-     rewrite <-A, <-B in E |- *. now apply zero_product_aux.
+ destruct (SRpair_abs x) as [[a A]|[a A]],
+  (SRpair_abs y) as [[b B]|[b B]].
+
+  (**the Proper instance at the top of the file needed to be added.
+  It was provable there. At this point, there are too other instances
+  to confuse typeclass resolution. Adding that direct Instance seems to help.
+  Here is a snippet for the earlier log:
+cons: done reading SConscript files.
+scons: Building targets ...
+coqc -R . CoRN -R math-classes/src MathClasses -q math-classes/src/implementations/natpair_integers.v
+Debug: 1: (*external*) apply @Equivalence_Symmetric on (Symmetric equiv)
+Debug: 1.1.1: apply @setoid_eq on (Equivalence equiv)
+Debug: 1.1.1.1.1: eapply @strong_setoids.Setoid_instance_0 on (Setoid Z)
+Debug: 1.1.1.1.1.1.1: eapply field_strongsetoid on (StrongSetoid Z)
+Debug: 1.1.1.1.1.1.1.1: no match for (Field Z) , 2 possibilities
+Debug: Backtracking after eapply field_strongsetoid
+Debug: Backtracking after eapply @strong_setoids.Setoid_instance_0
+Debug: 1.1.1.1.2: eapply sg_setoid on (Setoid Z)
+Debug: 1.1.1.1.2.1.1: apply comsg_setoid on (SemiGroup Z)
+Debug: 1.1.1.1.2.1.1.1.1: apply semilattice_sg on (CommutativeSemiGroup Z)
+Debug: 1.1.1.1.2.1.1.1.1.1.1: apply meet_semilattice on (SemiLattice Z)
+Debug: 1.1.1.1.2.1.1.1.1.1.1.1.1: eapply lattice_meet on (MeetSemiLattice Z)
+Debug: 1.1.1.1.2.1.1.1.1.1.1.1.1.1.1: apply distr_lattice_lattice on
+(Lattice Z)
+  
+  *)
+   rewrite <-A, <-B in E |- *.
+    now apply zero_product_aux.
     destruct (zero_product_aux a b) as [C|C].
       rewrite A, B. now apply rings.negate_zero_prod_r.
      left. now rewrite <-A.

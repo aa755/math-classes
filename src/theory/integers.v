@@ -11,16 +11,20 @@ Require Export
 Lemma to_ring_involutive `{Integers Z} Z2 `{Integers Z2} x :
   integers_to_ring Z2 Z (integers_to_ring Z Z2 x) = x.
 Proof.
-  rapply (proj2 (@categories.initials_unique' _ _ _ _ _ _ (rings.object Z) (rings.object Z2) _
+  pose proof (proj2 (@categories.initials_unique' _ _ _ _ _ _ (rings.object Z) (rings.object Z2) _
     integers_initial _ integers_initial) tt x).
+     simpl in H1.
+  destruct plus0, plus1. destruct mult0, mult1,zero0,zero1,one0,one1.
+  apply H1.    
 Qed.
 
 Lemma to_ring_unique `{Integers Z} `{Ring R} (f: Z → R) {h: SemiRing_Morphism f} x :
   f x = integers_to_ring Z R x.
 Proof.
   symmetry.
-  pose proof (rings.encode_morphism_and_ops (f:=f)).
+  pose proof (rings.encode_morphism_and_ops (f:=f)) as H1.
   set (@varieties.arrow rings.theory _ _ _ (rings.encode_variety_and_ops _) _ _ _ (rings.encode_variety_and_ops _) (λ _, f) _).
+  destruct plus0, Aplus,zero0, Azero. destruct mult0, Amult, one0, Aone.
   exact (integers_initial _ a tt x).
 Qed.
 

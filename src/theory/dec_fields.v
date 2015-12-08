@@ -199,12 +199,12 @@ Section from_stdlib_field_theory.
   Add Field F2 : ftheory.
 
   Definition from_stdlib_field_theory: @DecField F Fe (Build_Plus _ Fplus) 
-    (Build_Mult _ Fmult) Fzero Fone Fnegate Frecip.
+    (Build_Mult _ Fmult) (Build_Zero _ Fzero) (Build_One _ Fone) Fnegate Frecip.
   Proof with auto.
    destruct ftheory.
    repeat (constructor; try assumption); repeat intro
-   ; unfold equiv, mon_unit, sg_op, zero_is_mon_unit, plus_is_sg_op,
-     one_is_mon_unit, mult_is_sg_op, plus, mult, recip, negate; try field...
+   ; unfold equiv, mon_unit, sg_op, zero, plus,
+     one, mult, plus, mult, recip, negate; try field...
    unfold recip, mult.
    simpl.
    assert (Fe (Fmult x (Frecip x)) (Fmult (Frecip x) x)) as E by ring.
