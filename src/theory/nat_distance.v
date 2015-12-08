@@ -54,9 +54,11 @@ Global Program Instance natdistance_default `{Naturals N} : NatDistance N | 10 :
   end.
 Next Obligation.
   rewrite <-(naturals.to_semiring_involutive N nat y), <-E.
-  now rewrite rings.preserves_plus, (naturals.to_semiring_involutive _ _).
+  replace (Nat.add) with (@plus nat _);[| reflexivity].
+  rewrite rings.preserves_plus, (naturals.to_semiring_involutive _ _). reflexivity.
 Qed.
 Next Obligation.
   rewrite <-(naturals.to_semiring_involutive N nat x), <-E.
+  replace (Nat.add) with (@plus nat _);[| reflexivity].
   now rewrite rings.preserves_plus, (naturals.to_semiring_involutive _ _).
 Qed.

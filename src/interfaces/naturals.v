@@ -18,7 +18,8 @@ Section initial_maps.
   Program Definition natural_initial_arrow: InitialArrow (semirings.object A) :=
     λ y u, match u return A → y u with tt => naturals_to_semiring (y tt) end.
   Next Obligation.
-   apply (@semirings.mor_from_sr_to_alg (λ _, A) _ _ (semirings.variety A)); apply _.
+   apply (@semirings.mor_from_sr_to_alg (λ _, A) _ 
+   _ (semirings.variety A)); [| destruct Aplus,  Amult]; apply _.
   Qed.
 
   Global Existing Instance natural_initial_arrow.
@@ -31,6 +32,7 @@ Section initial_maps.
     intros y [x h] [] ?. simpl in *.
     apply same_morphism.
       apply semirings.decode_variety_and_ops.
+      destruct Aplus, Amult.
      apply (@semirings.decode_morphism_and_ops _ _ _ _ _ _ _ _ _ h).
     reflexivity.
   Qed.

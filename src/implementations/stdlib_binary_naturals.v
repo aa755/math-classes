@@ -7,8 +7,8 @@ Require Import
 Instance N_equiv : Equiv N := eq.
 Instance N_0 : Zero N := 0%N.
 Instance N_1 : One N := 1%N.
-Instance N_plus : Plus N := Nplus.
-Instance N_mult : Mult N := Nmult.
+Instance N_plus : Plus N := Build_Plus _ Nplus.
+Instance N_mult : Mult N := Build_Mult _ Nmult.
 
 (* properties: *)
 Instance: SemiRing N.

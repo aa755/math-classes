@@ -198,7 +198,8 @@ Section from_stdlib_field_theory.
 
   Add Field F2 : ftheory.
 
-  Definition from_stdlib_field_theory: @DecField F Fe Fplus Fmult Fzero Fone Fnegate Frecip.
+  Definition from_stdlib_field_theory: @DecField F Fe (Build_Plus _ Fplus) 
+    (Build_Mult _ Fmult) Fzero Fone Fnegate Frecip.
   Proof with auto.
    destruct ftheory.
    repeat (constructor; try assumption); repeat intro

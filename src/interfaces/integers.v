@@ -15,6 +15,7 @@ Section initial_maps.
   Global Instance integer_initial_arrow: InitialArrow (rings.object A).
    intro y.
    exists (λ u, match u return A → y u with tt => integers_to_ring (y tt) end).
+   destruct Amult, Aplus.
    abstract (apply rings.encode_morphism_only; apply _).
   Defined. (* for some reason [Program] isn't cooperating here. look into it *)
 
@@ -24,6 +25,7 @@ Section initial_maps.
     intros y [x h] [] ?. simpl in *.
     apply same_morphism.
       apply rings.decode_variety_and_ops.
+   destruct Amult, Aplus.
      apply (@rings.decode_morphism_and_ops _ _ _ _ _ _ _ _ _ h).
     reflexivity.
   Qed.

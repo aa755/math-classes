@@ -7,8 +7,12 @@ Require Export
 Lemma to_semiring_involutive N `{Naturals N} N2 `{Naturals N2} x :
   naturals_to_semiring N2 N (naturals_to_semiring N N2 x) = x.
 Proof.
-  rapply (proj2 (@categories.initials_unique' (varieties.Object semirings.theory)
+  pose proof (proj2 (@categories.initials_unique' (varieties.Object semirings.theory)
     _ _ _ _ _ (semirings.object N) (semirings.object N2) _ naturals_initial _ naturals_initial) tt x).
+  simpl in H1.
+  destruct plus0, plus1. destruct mult0, mult1.
+  apply H1.    
+    
   (* todo: separate pose necessary due to Coq bug *)
 Qed.
 
@@ -16,8 +20,11 @@ Lemma to_semiring_unique `{Naturals N} `{SemiRing SR} (f: N → SR) `{!SemiRing_
   f x = naturals_to_semiring N SR x.
 Proof.
   symmetry.
-  pose proof (@semirings.mor_from_sr_to_alg _ _ _ (semirings.variety N) _ _ _ (semirings.variety SR) (λ _, f) _).
-  set (@varieties.arrow semirings.theory _ _ _ (semirings.variety N) _ _ _ (semirings.variety SR) (λ _, f) _).
+  pose proof (@semirings.mor_from_sr_to_alg _ _ _ (semirings.variety N) 
+  _ _ _ (semirings.variety SR) (λ _, f)). simpl in H1.
+  destruct plus0, Aplus. destruct mult0, Amult.
+  specialize (H1 SemiRing_Morphism0).
+  set (@varieties.arrow semirings.theory _ _ _ (semirings.variety N) _ _ _ (semirings.variety SR) (λ _, f) H1).
   apply (naturals_initial _ a tt x).
 Qed.
 

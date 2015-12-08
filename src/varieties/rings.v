@@ -74,7 +74,15 @@ Section encode_with_ops.
 End encode_with_ops.
 
 Lemma encode_algebra_only `{!AlgebraOps theory A} `{∀ u, Equiv (A u)} `{!Ring (A tt)}: Algebra sig A .
-Proof. constructor; intros []; simpl in *; try apply _. Qed.
+Proof. constructor; intros []; simpl in *; try apply _;eapply sg_op_proper.
+Unshelve.
+- replace  (AlgebraOps0 plus) with (@plus_is_sg_op (A tt) _);[| reflexivity]. 
+  eauto with typeclass_instances.
+- replace  (AlgebraOps0 mult) with (@mult_is_sg_op (A tt) _);[| reflexivity].
+  (* eauto with typeclass_instances.  why does this not work?*)
+  destruct Ring0. destruct ring_monoid. destruct commonoid_mon.
+  exact monoid_semigroup.
+Qed.
 
 Instance decode_variety_and_ops `{InVariety theory A}: Ring (A tt).
 Proof with simpl; auto.

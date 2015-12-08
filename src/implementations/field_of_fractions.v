@@ -41,7 +41,7 @@ Proof. intros x1 x2 E. unfold equiv, Frac_equiv. simpl. now rewrite E. Qed.
 
 (* Relations, operations and constants *)
 Global Program Instance Frac_plus: Plus (Frac R) :=
-  λ x y, frac (num x * den y + num y * den x) (den x * den y) _.
+  Build_Plus _ (λ x y, frac (num x * den y + num y * den x) (den x * den y) _).
 Next Obligation. destruct x, y. simpl. now apply mult_ne_0. Qed.
 
 Global Instance Frac_0: Zero (Frac R) := ('0 : Frac R).
@@ -49,7 +49,8 @@ Global Instance Frac_1: One (Frac R) := ('1 : Frac R).
 
 Global Instance Frac_negate: Negate (Frac R) := λ x, frac (- num x) (den x) (den_ne_0 x).
 
-Global Program Instance Frac_mult: Mult (Frac R) := λ x y, frac (num x * num y) (den x * den y) _.
+Global Program Instance Frac_mult: Mult (Frac R) := 
+Build_Mult _ (λ x y, frac (num x * num y) (den x * den y) _).
 Next Obligation. destruct x, y. simpl. now apply mult_ne_0. Qed.
 
 Ltac unfolds := unfold Frac_negate, Frac_plus, equiv, Frac_equiv in *; simpl in *.
@@ -63,7 +64,7 @@ Proof.
   rewrite F. apply left_absorb.
 Qed.
 
-Instance: Proper ((=) ==> (=) ==> (=)) Frac_plus.
+Instance: Proper ((=) ==> (=) ==> (=)) (@plus _ Frac_plus).
 Proof with try ring.
   intros x x' E y y' E'. unfolds.
   transitivity (num x * den x' * den y * den y' + num y * den y' * den x * den x')...
@@ -76,7 +77,7 @@ Proof.
   rewrite <-negate_mult_distr_l, E. ring.
 Qed.
 
-Instance: Proper ((=) ==> (=) ==> (=)) Frac_mult.
+Instance: Proper ((=) ==> (=) ==> (=)) (@mult _ Frac_mult).
 Proof with try ring.
   intros x y E x0 y0 E'. unfolds.
   transitivity (num x * den y * (num x0 * den y0))...

@@ -9,12 +9,12 @@ Add Ring F : (rings.stdlib_ring_theory F).
 Global Program Instance NonZero_1: One (F ₀) := (1:F).
 Next Obligation. solve_propholds. Qed.
 
-Global Program Instance NonZero_mult: Mult (F ₀) := λ x y, (`x *  `y : F).
+Global Program Instance NonZero_mult: Mult (F ₀) := Build_Mult _ (λ x y, (`x *  `y : F)).
 Next Obligation. solve_propholds. Qed.
 
 Ltac unfold_equiv := repeat intro; unfold equiv, sig_equiv in *; simpl in *.
 
-Instance: Proper ((=) ==> (=) ==> (=)) NonZero_mult.
+Instance: Proper ((=) ==> (=) ==> (=)) (@mult _ NonZero_mult).
 Proof.
   intros [??] [??] E1 [??] [??] E2. unfold_equiv.
   now rewrite E1, E2.

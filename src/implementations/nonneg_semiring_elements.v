@@ -15,13 +15,13 @@ Add Ring R : (rings.stdlib_semiring_theory R).
 Global Instance NonNeg_inject: Cast (R⁺) R := @proj1_sig R _.
 
 (* Operations *)
-Global Program Instance NonNeg_plus: Plus (R⁺) := λ x y, (`x + `y)↾_.
+Global Program Instance NonNeg_plus: Plus (R⁺) := Build_Plus _ (λ x y, (`x + `y)↾_).
 Next Obligation.
   destruct x as [x Hx], y as [y Hy].
   now apply nonneg_plus_compat.
 Qed.
 
-Global Program Instance NonNeg_mult: Mult (R⁺) := λ x y, (`x * `y)↾_.
+Global Program Instance NonNeg_mult: Mult (R⁺) := Build_Mult _ (λ x y, (`x * `y)↾_).
 Next Obligation.
   destruct x as [x Hx], y as [y Hy].
   now apply nonneg_mult_compat.
@@ -35,13 +35,13 @@ Next Obligation. apply le_0_1. Qed.
 (* * Equalitity *)
 Local Ltac unfold_equivs := unfold equiv, sig_equiv in *; simpl in *.
 
-Instance: Proper ((=) ==> (=) ==> (=)) NonNeg_plus.
+Instance: Proper ((=) ==> (=) ==> (=)) (@plus _ NonNeg_plus).
 Proof.
   intros [x1 Ex1] [y1 Ey1] E1 [x2 Ex2] [y2 Ey2] E2. unfold_equivs.
   now rewrite E1, E2.
 Qed.
 
-Instance: Proper ((=) ==> (=) ==> (=)) NonNeg_mult.
+Instance: Proper ((=) ==> (=) ==> (=)) (@mult _ NonNeg_mult).
 Proof.
   intros [x1 Ex1] [y1 Ey1] E1 [x2 Ex2] [y2 Ey2] E2. unfold_equivs.
   now rewrite E1, E2.
